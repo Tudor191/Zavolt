@@ -1,0 +1,208 @@
+/*
+ * Carried over from the original dashboard (`div > ul`, `li .base`, `li .title`,
+ * `li .icon`). Property values are unchanged; what is new is marked below.
+ */
+
+.page {
+  /*
+   * New: room for the icon that rises above its ring, so it is never cut off
+   * on short screens. The vertical padding is symmetric, which keeps the rings
+   * exactly centred on taller screens, as before.
+   */
+  padding: 120px 24px;
+  /*
+   * New: each ring is a spinning square box whose invisible corners reach past
+   * its 200px cell. Clip them at the page edge so they cannot cause sideways
+   * scrolling when the menu spans the whole viewport.
+   */
+  overflow-x: clip;
+}
+
+.menu {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* Was a fixed 800px, which pushed items off narrow screens. */
+  width: min(800px, 100%);
+  margin: 0 auto;
+  list-style-type: none;
+}
+
+.link {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 200px;
+  height: 200px;
+  text-decoration: none;
+  /* As in the original, only the ring reacts to the pointer. */
+  pointer-events: none;
+}
+
+.base {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 8px solid var(--accent);
+  border-left: 8px solid transparent;
+  filter: drop-shadow(0 0 10px var(--accent));
+  transform: rotateX(60deg) rotateZ(-45deg);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: 0.5s ease-in-out;
+  animation: spin 8s linear infinite;
+}
+
+.base::after {
+  position: absolute;
+  content: '';
+  width: 30px;
+  height: 30px;
+  top: 9px;
+  left: 9px;
+  border-radius: 50%;
+  background-color: var(--accent);
+}
+
+.title {
+  position: absolute;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  transform: rotateY(30deg) skewY(-24deg) translateY(0px);
+  pointer-events: none;
+  opacity: 0;
+  transition: 0.5s ease-in-out;
+}
+
+.icon {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: var(--color-text-muted);
+  font-size: 80px;
+  transform: rotateX(60deg) rotateZ(-45deg);
+  pointer-events: none;
+  transition: 0.5s ease-in-out;
+}
+
+/*
+ * Revealed state. The original showed it while the pointer was over the ring;
+ * keyboard focus now shows it too, so the labels are reachable without a mouse.
+ */
+.base:hover,
+.link:focus-visible .base {
+  filter: drop-shadow(0 0 10px var(--accent));
+  animation-play-state: paused;
+}
+
+.base:hover + .title + .icon,
+.link:focus-visible .icon {
+  transform: rotateY(30deg) skewY(-24deg) translateY(-160px);
+  color: var(--accent);
+  filter: drop-shadow(0 0 3px var(--accent));
+  animation: wave 1s ease-in-out infinite;
+}
+
+.base:hover + .title,
+.link:focus-visible .title {
+  transform: rotateY(30deg) skewY(-24deg) translateY(-90px);
+  color: var(--accent);
+  text-shadow: 0 0 3px var(--accent);
+  transition-delay: 0.1s;
+  opacity: 1;
+  animation: wave 1s ease-in-out infinite;
+}
+
+/* New: a visible focus indicator that follows the ring. */
+.link:focus-visible {
+  outline: none;
+}
+
+.link:focus-visible .base {
+  outline: 3px solid var(--color-text);
+  outline-offset: 6px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotateX(60deg) rotateZ(0);
+  }
+
+  100% {
+    transform: rotateX(60deg) rotateZ(-360deg);
+  }
+}
+
+@keyframes wave {
+  0%,
+  100% {
+    margin-bottom: 0;
+  }
+
+  50% {
+    margin-bottom: 15px;
+  }
+}
+
+/*
+ * New: devices without hover (phones, tablets) could never see the labels.
+ * Show the revealed state permanently there, without the bobbing animation,
+ * and let a tap on the icon or label follow the link as well.
+ */
+@media (hover: none) {
+  .title {
+    transform: rotateY(30deg) skewY(-24deg) translateY(-90px);
+    color: var(--accent);
+    text-shadow: 0 0 3px var(--accent);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .icon {
+    transform: rotateY(30deg) skewY(-24deg) translateY(-160px);
+    color: var(--accent);
+    filter: drop-shadow(0 0 3px var(--accent));
+    pointer-events: auto;
+  }
+
+  .base:hover + .title,
+  .base:hover + .title + .icon,
+  .link:focus-visible .title,
+  .link:focus-visible .icon {
+    animation: none;
+  }
+}
+
+/* New: stack the items when three of them no longer fit comfortably side by side. */
+@media (max-width: 720px) {
+  .page {
+    padding-bottom: 24px;
+  }
+
+  .menu {
+    flex-direction: column;
+    row-gap: 80px;
+  }
+}
+
+/* New: honour the reduced-motion preference. */
+@media (prefers-reduced-motion: reduce) {
+  .base,
+  .base:hover + .title,
+  .base:hover + .title + .icon,
+  .link:focus-visible .title,
+  .link:focus-visible .icon {
+    animation: none;
+  }
+
+  .base,
+  .title,
+  .icon {
+    transition-duration: 0.01s;
+  }
+}
