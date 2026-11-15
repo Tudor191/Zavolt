@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHOP NAME</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="icon" href="images/logo.png" type="image/icon type">
+    
+
+</head>
+<body onload="myFunction()" style="margin:0;">
+    <div id="loader">
+        <svg class="cart" role="img" aria-label="Shopping cart line animation" viewBox="0 0 128 128" width="128px" height="128px" xmlns="http://www.w3.org/2000/svg">
+            <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="8">
+                <g class="cart__track" stroke="hsla(0,10%,10%,0.1)">
+                    <polyline points="4,4 21,4 26,22 124,22 112,64 35,64 39,80 106,80" />
+                    <circle cx="43" cy="111" r="13" />
+                    <circle cx="102" cy="111" r="13" />
+                </g>
+                <g class="cart__lines" stroke="currentColor">
+                    <polyline class="cart__top" points="4,4 21,4 26,22 124,22 112,64 35,64 39,80 106,80" stroke-dasharray="338 338" stroke-dashoffset="-338" />
+                    <g class="cart__wheel1" transform="rotate(-90,43,111)">
+                        <circle class="cart__wheel-stroke" cx="43" cy="111" r="13" stroke-dasharray="81.68 81.68" stroke-dashoffset="81.68" />
+                    </g>
+                    <g class="cart__wheel2" transform="rotate(90,102,111)">
+                        <circle class="cart__wheel-stroke" cx="102" cy="111" r="13" stroke-dasharray="81.68 81.68" stroke-dashoffset="81.68" />
+                    </g>
+                </g>
+            </g>
+        </svg>
+        <div class="loader__text">
+            <p class="loader__msg">Loading...</p>
+        </div>
+    </div>
+<div style="display:none;" id="myDiv" class="animate-bottom">
+<ul>
+    <li style="--color: #ef436b">
+        <span class="base"></span>
+        <span class="title">CONTACT US</span>
+        <span class="icon">
+            <ion-icon name="call"></ion-icon>
+        </span>
+    </li>   
+    </a>
+    <li style="--color: #9e04d1">
+    <span class="base"></span>
+        <span class="title">VAULT</span>
+        <span class="icon">
+            <ion-icon name="lock-closed"></ion-icon>
+        </span>
+    </li>
+    </a>
+    <li style="--color: #fcdf03">
+        <span class="base"></span>
+        <span class="title">ACCOUNT</span>
+        <span class="icon">
+            <ion-icon name="person"></ion-icon>
+        </span>
+    </li>
+    </a>
+</ul>
+</div>
+
+<script>
+    var myVar;
+    
+    function myFunction() {
+      myVar = setTimeout(showPage, 3000);
+    }
+    
+    function showPage() {
+      document.getElementById("loader").style.display = "none";
+      document.getElementById("myDiv").style.display = "block";
+    }
+    </script>
+    
+<script
+type="module"
+src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+></script>
+<script
+nomodule
+src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+></script>
+
+
+</body>
+</html>
