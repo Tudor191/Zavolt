@@ -1,6 +1,6 @@
-import { act, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter, useNavigate } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppRoutes } from './AppRoutes.tsx';
 import { SPLASH_DURATION_MS } from './components/SplashGate.tsx';
@@ -10,6 +10,33 @@ import { REDUCED_MOTION_QUERY, stubMatchMedia } from './test/matchMedia.ts';
 function renderAt(path: string) {
   return render(
     <MemoryRouter initialEntries={[path]}>
+      <AppRoutes />
+    </MemoryRouter>,
+  );
+}
+
+/** A button that moves to `path` inside the application, as following a link would. */
+function GoTo({ path }: { readonly path: string }) {
+  const navigate = useNavigate();
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        void navigate(path);
+      }}
+    >
+      {`Go to ${path}`}
+    </button>
+  );
+}
+
+/** Renders the routes at `path`, with a button for each address in `destinations`. */
+function renderWithNavigation(path: string, destinations: readonly string[]) {
+  return render(
+    <MemoryRouter initialEntries={[path]}>
+      {destinations.map((destination) => (
+        <GoTo key={destination} path={destination} />
+      ))}
       <AppRoutes />
     </MemoryRouter>,
   );
@@ -379,6 +406,28 @@ describe('the loading screen', () => {
     renderAt('/index.html');
 
     expect(screen.getByRole('status')).toBeInTheDocument();
+  });
+
+  // `fireEvent` rather than `userEvent`: under Vitest's fake timers, Testing
+  // Library's asynchronous wrapper waits on a timer that never fires.
+  it('plays at most once per page load, however the visitor moves around', () => {
+    renderWithNavigation('/', ['/app', '/vault', '/', '/account']);
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+
+    // Entering the application plays it...
+    fireEvent.click(screen.getByRole('button', { name: 'Go to /app' }));
+    expect(screen.getByRole('status')).toHaveTextContent('Loading...');
+    act(() => {
+      vi.advanceTimersByTime(SPLASH_DURATION_MS);
+    });
+    expect(pageHeading('Dashboard')).toBeInTheDocument();
+
+    // ...once: not between application pages, nor on coming back from the public site.
+    for (const path of ['/vault', '/', '/account']) {
+      fireEvent.click(screen.getByRole('button', { name: `Go to ${path}` }));
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    }
+    expect(pageHeading('Account')).toBeInTheDocument();
   });
 
   it.each(['/', '/login', '/register', '/contact', '/privacy', '/terms', '/no-such-page'])(
