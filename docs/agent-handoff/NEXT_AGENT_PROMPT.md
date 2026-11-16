@@ -63,9 +63,8 @@ nobody can sign in. Never write, in code, documentation, a pull request or page 
 
 ## 2. State snapshot
 
-_Last refreshed: 16 November 2026, when Phase 2 was finalised on its pull request: the owner's
-decisions recorded and the loader's artwork replaced. Whoever finishes a phase must refresh this
-section._
+_Last refreshed: 16 November 2026, after pull request 2 (Phase 2) was merged into `main`. Whoever
+finishes a phase must refresh this section._
 
 Verify every line below yourself (section 11) before relying on it.
 
@@ -74,34 +73,32 @@ Verify every line below yourself (section 11) before relying on it.
 | Phase | What it was                                                                                         | State when this was last refreshed                                                                 |
 | ----- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | 1     | Audit of the original static site, migration to React and TypeScript, tooling, tests, CI, documents | Merged into `main` as commit `742b205` (squash merge of pull request 1), with the owner's approval |
-| 2     | Homepage, dashboard moved to `/app`, placeholders, brand mark, padlock-and-key loader, this file    | Pull request 2 open from `feature/public-landing-page` into `main`: not merged, awaiting review    |
+| 2     | Homepage, dashboard moved to `/app`, placeholders, brand mark, padlock-and-key loader, this file    | Merged into `main` as commit `7ab28f3` (squash merge of pull request 2), with the owner's approval |
 
-Pull request 2 is <https://github.com/Tudor191/Zavolt/pull/2>. It was opened with its branch at
-`93194d8`. The finalisation then added commits on top of it that record the owner's decisions and
-replace the loader's artwork. Only the owner may merge it. To see its current head:
+Pull request 2 is <https://github.com/Tudor191/Zavolt/pull/2>. The owner approved it, and it was
+squash-merged on 16 November 2026 from `feature/public-landing-page` at `e190de5`. The commit on
+`main`, `7ab28f3`, has exactly that commit's content. The branch's own commits are not part of
+`main`'s history.
 
-```bash
-git ls-remote origin feature/public-landing-page
-```
+Phase 2 is complete. No later phase has been started: the owner decides what comes next
+(section 18).
 
 ### 2.2 Branches
 
-| Branch                                           | What it is                                                         | Rule                                          |
-| ------------------------------------------------ | ------------------------------------------------------------------ | --------------------------------------------- |
-| `main`                                           | The integration branch. Every pull request targets it.             | Never commit to it directly.                  |
-| `conversie-html-to-typescript`                   | The original branch, holding the original static site (9 commits). | Never change or delete it.                    |
-| `claude/zavolt-html-typescript-migration-w69ttq` | The Phase 1 implementation branch (pull request 1, merged).        | Leave it. Do not delete it.                   |
-| `feature/public-landing-page`                    | The Phase 2 implementation branch.                                 | Only continue on it if the owner asks you to. |
+| Branch                                           | What it is                                                         | Rule                         |
+| ------------------------------------------------ | ------------------------------------------------------------------ | ---------------------------- |
+| `main`                                           | The integration branch. Every pull request targets it.             | Never commit to it directly. |
+| `conversie-html-to-typescript`                   | The original branch, holding the original static site (9 commits). | Never change or delete it.   |
+| `claude/zavolt-html-typescript-migration-w69ttq` | Phase 1 (pull request 1, merged), then this handoff refresh.       | Leave it. Do not delete it.  |
+| `feature/public-landing-page`                    | The Phase 2 implementation branch (pull request 2, merged).        | Leave it. Do not delete it.  |
 
-When this was last refreshed, `main` was at `742b205`, `conversie-html-to-typescript` was untouched at
+When this was last refreshed, `main` was at `7ab28f3`, `conversie-html-to-typescript` was untouched at
 `cbc08b4`, and **the repository's default branch was `main`**. The owner switched it by hand after
 Phase 1: the agent session of that phase could not, because its GitHub tools had no
 repository-settings operation (section 5.3). Check the current default with
 `git ls-remote --symref origin HEAD` before you rely on it.
 
-If the Phase 2 pull request has been merged, `main` contains everything described below. If it is
-still open, `main` does not yet contain the homepage: section 4 then describes the branch, not
-`main`.
+`main` contains everything described below.
 
 ### 2.3 What is implemented
 
@@ -784,8 +781,8 @@ the owner asks for.
 
 | Step | Work                                                                                        | Why it comes here                                                  |
 | ---- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| 1    | Foundation: typed application, tests, CI, documents (Phase 1)                               | Done or in review. See section 2.                                  |
-| 2    | Public homepage and route separation (Phase 2)                                              | In progress or in review. See section 2.                           |
+| 1    | Foundation: typed application, tests, CI, documents (Phase 1)                               | Done. See section 2.                                               |
+| 2    | Public homepage and route separation (Phase 2)                                              | Done. See section 2.                                               |
 | 3    | Choose hosting; send the response headers in `SECURITY.md`                                  | Several protections cannot exist until something serves the files. |
 | 4    | Write the threat model and the full protocol; have a cryptographer review them              | Nothing cryptographic may be built before this.                    |
 | 5    | Build the client core as a package with no user interface, tested against published vectors | One audited implementation, shared by every client.                |

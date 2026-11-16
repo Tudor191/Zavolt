@@ -43,6 +43,7 @@ one that says so.
 | 2026-11-16 | The loading screen stays as it is: three seconds, once per page load, in the application area only.                 | Owner         | Exactly three seconds, at most once per page load, only when a visitor first enters the application area. Public pages never show it. Confirms the agent defaults above.                               |
 | 2026-11-16 | The loader's shopping cart is replaced by an animated padlock and key.                                              | Owner         | The cart came from the template. The animation is a picture: it does not stand for any real unlocking, checking or decryption.                                                                         |
 | 2026-11-16 | The padlock and key are original SVG in the brand colours, animated by one CSS sequence of 2.7 seconds.             | Agent default | The owner set the sequence and its length, 2.6 to 2.8 seconds. The key's quarter turn shows as the key narrowing edge-on. The open padlock is the resting state, shown where nothing animates.         |
+| 2026-11-16 | Merge pull request 2 with a squash merge.                                                                           | Owner         | The owner approved the merge after the final pre-merge review. It is commit `7ab28f3` on `main`.                                                                                                       |
 
 ## Statements on the public homepage that the owner was asked to confirm
 
