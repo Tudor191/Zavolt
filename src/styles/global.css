@@ -12,10 +12,6 @@
 }
 
 :root {
-  --hue: 223;
-  /* The loader's stroke colour, from the original site. */
-  --primary: hsl(var(--hue), 90%, 55%);
-
   /* Surfaces */
   --color-background: rgb(11, 5, 28);
   --color-surface: #120a29;
