@@ -1,0 +1,76 @@
+/*
+ * Global styles: reset, design tokens and document-level layout.
+ * Component styles live next to their components as CSS Modules.
+ * Values are carried over from the original static site's stylesheet.
+ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border: 0;
+}
+
+:root {
+  --hue: 223;
+  --primary: hsl(var(--hue), 90%, 55%);
+
+  --color-background: rgb(11, 5, 28);
+  --color-text: #fff;
+  --color-text-muted: #b5b5b5;
+
+  /* The interface has a single, dark theme. */
+  color-scheme: dark;
+  font-size: calc(16px + (20 - 16) * (100vw - 320px) / (1280 - 320));
+}
+
+/*
+ * Accent colours. An element opts in with a `data-accent` attribute and its
+ * descendants read `--accent`, so no inline styles are needed (the production
+ * Content-Security-Policy forbids them).
+ */
+[data-accent='contact'] {
+  --accent: #ef436b;
+}
+
+[data-accent='vault'] {
+  --accent: #9e04d1;
+}
+
+[data-accent='account'] {
+  --accent: #fcdf03;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Headings receive focus programmatically after navigation; they are not interactive. */
+h1:focus {
+  outline: none;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.noscript-message {
+  padding: 2rem 1rem;
+  text-align: center;
+}

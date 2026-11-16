@@ -1,0 +1,60 @@
+/*
+ * A centred message with a way back to the dashboard. It reuses the visual
+ * vocabulary of the dashboard: the same accent colours, glow and title style.
+ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 1rem;
+}
+
+.icon {
+  display: grid;
+  color: var(--accent, var(--primary));
+  font-size: 80px;
+  filter: drop-shadow(0 0 3px var(--accent, var(--primary)));
+}
+
+.title {
+  text-transform: uppercase;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.message {
+  max-width: 32ch;
+  color: var(--color-text-muted);
+}
+
+.back {
+  margin-top: 1rem;
+  padding: 0.6em 1.4em;
+  border: 2px solid var(--accent, var(--primary));
+  border-radius: 999px;
+  color: var(--color-text);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.back:hover {
+  box-shadow: 0 0 10px var(--accent, var(--primary));
+}
+
+.back:focus-visible {
+  outline: 3px solid var(--color-text);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .back {
+    transition: none;
+  }
+}

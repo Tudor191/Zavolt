@@ -1,0 +1,9 @@
+# Store text with LF line endings regardless of the contributor's platform.
+* text=auto eol=lf
+
+# Binary assets must never be normalised.
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff binary
+*.woff2 binary

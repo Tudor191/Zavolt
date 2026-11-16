@@ -1,0 +1,32 @@
+/* Spans the row, so the loader keeps the width and centring it had in the original site. */
+.splash {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Carried over from the original site's `.animate-bottom` / `#myDiv`. */
+.reveal {
+  position: relative;
+  width: 100%;
+  text-align: center;
+  animation: revealFromBottom 1s;
+}
+
+@keyframes revealFromBottom {
+  from {
+    bottom: -100px;
+    opacity: 0;
+  }
+
+  to {
+    bottom: 0;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    animation: none;
+  }
+}
