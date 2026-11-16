@@ -11,8 +11,11 @@ own source code.
 Ionicons
 --------
 
-The call, lock-closed and person icons are from Ionicons v5.5.2
-(https://ionic.io/ionicons).
+These icons are from Ionicons v5.5.2 (https://ionic.io/ionicons), copied
+unchanged: arrow-forward, browsers, call, checkmark, close, desktop,
+document-text, extension-puzzle, folder-open, game-controller,
+information-circle, key, lock-closed, log-in, menu, person, person-add,
+server, shield-checkmark and sync.
 
 The MIT License (MIT)
 

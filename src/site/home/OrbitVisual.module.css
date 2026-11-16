@@ -1,0 +1,98 @@
+.orbit {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(100%, 540px);
+  aspect-ratio: 1;
+  margin-inline: auto;
+  /*
+   * Decoration only. On narrow screens the hero pulls this box up over the
+   * empty space above the rings, so it must never catch a tap meant for the
+   * buttons and text beside it.
+   */
+  pointer-events: none;
+}
+
+.halo {
+  position: absolute;
+  inset: 22%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(158 4 209 / 0.45), rgb(158 4 209 / 0));
+}
+
+/*
+ * Each ring is the dashboard's ring: a circle with its left quarter missing
+ * and a dot where the arc begins, tilted into an ellipse and turning in its
+ * own plane.
+ */
+.ring {
+  --tilt: rotateX(72deg);
+
+  position: absolute;
+  border: 2px solid var(--accent);
+  border-left-color: transparent;
+  border-radius: 50%;
+  filter: drop-shadow(0 0 6px var(--accent));
+  transform: var(--tilt) rotateZ(var(--start, 0deg));
+  animation: orbit var(--period, 24s) linear infinite;
+}
+
+.ring::after {
+  content: '';
+  position: absolute;
+  top: 14.6%;
+  left: 14.6%;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  background-color: var(--accent);
+}
+
+.outer {
+  --tilt: rotateX(74deg) rotateY(-8deg);
+  --start: 30deg;
+  --period: 30s;
+
+  inset: 0;
+}
+
+.middle {
+  --tilt: rotateX(70deg) rotateY(24deg);
+  --start: 160deg;
+  --period: 22s;
+
+  inset: 13%;
+  animation-direction: reverse;
+}
+
+.inner {
+  --tilt: rotateX(66deg) rotateY(-30deg);
+  --start: 260deg;
+  --period: 16s;
+
+  inset: 26%;
+}
+
+.core {
+  position: relative;
+  width: clamp(72px, 19%, 104px);
+  height: auto;
+  filter: drop-shadow(0 12px 32px rgb(158 4 209 / 0.7));
+}
+
+@keyframes orbit {
+  from {
+    transform: var(--tilt) rotateZ(var(--start, 0deg));
+  }
+
+  to {
+    transform: var(--tilt) rotateZ(calc(var(--start, 0deg) + 360deg));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring {
+    animation: none;
+  }
+}

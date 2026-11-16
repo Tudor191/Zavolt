@@ -1,6 +1,5 @@
 import { BrowserRouter } from 'react-router';
 import { AppRoutes } from './AppRoutes.tsx';
-import { SplashGate } from './components/SplashGate.tsx';
 
 /**
  * Application root.
@@ -12,9 +11,7 @@ import { SplashGate } from './components/SplashGate.tsx';
 export function App() {
   return (
     <BrowserRouter>
-      <SplashGate>
-        <AppRoutes />
-      </SplashGate>
+      <AppRoutes />
     </BrowserRouter>
   );
 }

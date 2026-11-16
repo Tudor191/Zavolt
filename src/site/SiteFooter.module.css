@@ -1,0 +1,118 @@
+.footer {
+  border-top: 1px solid var(--color-border);
+  background-color: rgb(255 255 255 / 0.015);
+}
+
+.top {
+  display: grid;
+  gap: 48px;
+  padding-block: 64px 48px;
+}
+
+.about {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 20px;
+  max-width: 26rem;
+}
+
+.brand {
+  display: inline-flex;
+  border-radius: 10px;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.tagline {
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.status {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid rgb(252 223 3 / 0.25);
+  border-radius: 14px;
+  background-color: rgb(252 223 3 / 0.05);
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.status strong {
+  color: var(--color-status-progress);
+  font-weight: 600;
+}
+
+.statusDot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-top: 0.5em;
+  border-radius: 50%;
+  background-color: var(--color-status-progress);
+}
+
+.groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 32px;
+}
+
+.groupTitle {
+  margin-bottom: 14px;
+  color: var(--color-text);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.list {
+  display: grid;
+  gap: 4px;
+  list-style: none;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  border-radius: 6px;
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .link:hover {
+    color: var(--color-text);
+  }
+}
+
+.bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding-block: 24px 32px;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-tertiary);
+  font-size: 0.8125rem;
+}
+
+@media (min-width: 900px) {
+  .top {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: 64px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link {
+    transition: none;
+  }
+}

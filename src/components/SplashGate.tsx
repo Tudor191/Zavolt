@@ -1,4 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
+import { classNames } from '../classNames.ts';
+import { prefersReducedMotion } from '../motion.ts';
 import styles from './SplashGate.module.css';
 import { SplashLoader } from './SplashLoader.tsx';
 
@@ -12,37 +14,48 @@ import { SplashLoader } from './SplashLoader.tsx';
  */
 export const SPLASH_DURATION_MS = 3000;
 
-function prefersReducedMotion(): boolean {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
-
 interface SplashGateProps {
   readonly children: ReactNode;
+  /**
+   * Whether the current page is one the loading screen belongs to. The public
+   * website passes `false`, so its pages appear at once.
+   */
+  readonly active?: boolean | undefined;
   readonly durationMs?: number | undefined;
 }
 
 /**
- * Shows the loader once per page load, then reveals its children.
+ * Shows the loader before its children, at most once per page load.
+ *
+ * Render it above the routes: it then lives as long as the page does, so
+ * moving between pages never plays the loader a second time. While `active`
+ * is false it stays out of the way, and it plays the first time `active`
+ * becomes true.
  *
  * Visitors who ask for reduced motion skip the wait, because for them it
  * would be a static screen with no purpose.
  */
-export function SplashGate({ children, durationMs = SPLASH_DURATION_MS }: SplashGateProps) {
-  const [isRevealed, setIsRevealed] = useState(() => durationMs <= 0 || prefersReducedMotion());
+export function SplashGate({
+  children,
+  active = true,
+  durationMs = SPLASH_DURATION_MS,
+}: SplashGateProps) {
+  const [hasPlayed, setHasPlayed] = useState(() => durationMs <= 0 || prefersReducedMotion());
+  const isShowing = active && !hasPlayed;
 
   useEffect(() => {
-    if (isRevealed) {
+    if (!isShowing) {
       return undefined;
     }
     const timer = window.setTimeout(() => {
-      setIsRevealed(true);
+      setHasPlayed(true);
     }, durationMs);
     return () => {
       window.clearTimeout(timer);
     };
-  }, [isRevealed, durationMs]);
+  }, [isShowing, durationMs]);
 
-  if (!isRevealed) {
+  if (isShowing) {
     // The loading screen is a page of its own to assistive technology, so it
     // gets the landmark and heading every other page has.
     return (
@@ -52,5 +65,7 @@ export function SplashGate({ children, durationMs = SPLASH_DURATION_MS }: Splash
       </main>
     );
   }
-  return <div className={styles.reveal}>{children}</div>;
+  // The same element wraps the content whether or not the loader has played,
+  // so that switching between the two never remounts the page underneath.
+  return <div className={classNames(styles.content, hasPlayed && styles.revealed)}>{children}</div>;
 }

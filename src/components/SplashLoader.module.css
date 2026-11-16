@@ -1,6 +1,12 @@
 /* Carried over from the original site's loader (`#loader`, `.loader__*`, `.cart__*`). */
 
 .loader {
+  /*
+   * The original site set this fluid size on the root element. It is scoped
+   * here so the loader keeps its exact proportions while the rest of the
+   * product uses the visitor's own default text size.
+   */
+  font-size: calc(16px + (20 - 16) * (100vw - 320px) / (1280 - 320));
   text-align: center;
   max-width: 20em;
   width: 100%;

@@ -10,6 +10,8 @@
    * exactly centred on taller screens, as before.
    */
   padding: 120px 24px;
+  /* From the original `#myDiv`: centres the two-line "Contact us" label. */
+  text-align: center;
   /*
    * New: each ring is a spinning square box whose invisible corners reach past
    * its 200px cell. Clip them at the page edge so they cannot cause sideways
