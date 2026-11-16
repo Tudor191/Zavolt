@@ -33,8 +33,21 @@ one that says so.
 | 2026-11-16 | Add `/privacy` and `/terms` as placeholders that say no document has been published.                                | Agent default | The footer needs the links; publishing invented legal text is not allowed.                                                                                                                             |
 | 2026-11-16 | The original site's viewport-based root font size applies to the loader only.                                       | Agent default | The loader keeps its exact proportions, and the rest of the product follows the visitor's default text size.                                                                                           |
 | 2026-11-16 | Every feature, platform and roadmap step on the homepage carries a Done, In development or Planned label.           | Agent default | So that nothing planned can be read as available.                                                                                                                                                      |
+| 2026-11-16 | `main` is the default branch.                                                                                       | Owner         | The owner switched it in the repository settings, which the agent session could not do.                                                                                                                |
+| 2026-11-16 | Commitment: the encryption design will be reviewed by cryptography specialists before any of it is implemented.     | Owner         | A long-term commitment, not an implemented feature. It confirms what the homepage says.                                                                                                                |
+| 2026-11-16 | Commitment: an independent security audit will take place before any public release.                                | Owner         | A commitment about the future: no audit has taken place. No security claim may be made before it.                                                                                                      |
+| 2026-11-16 | Commitment: Zavolt will not include advertising or tracking code.                                                   | Owner         | A commitment for the whole product. The website already loads none.                                                                                                                                    |
+| 2026-11-16 | Commitment: no account recovery design will ever give Zavolt the ability to decrypt a user's vault.                 | Owner         | A constraint on the recovery design, which is still open, as is whether recovery is offered at all.                                                                                                    |
+| 2026-11-16 | `/contact` stays part of the public website.                                                                        | Owner         | Confirms the agent default above.                                                                                                                                                                      |
+| 2026-11-16 | `/cart` and `/shop` stay as application placeholders. Every existing route and legacy redirect keeps working.       | Owner         | Confirms the agent default of 15 November.                                                                                                                                                             |
+| 2026-11-16 | The loading screen stays as it is: three seconds, once per page load, in the application area only.                 | Owner         | Exactly three seconds, at most once per page load, only when a visitor first enters the application area. Public pages never show it. Confirms the agent defaults above.                               |
+| 2026-11-16 | The loader's shopping cart is replaced by an animated padlock and key.                                              | Owner         | The cart came from the template. The animation is a picture: it does not stand for any real unlocking, checking or decryption.                                                                         |
+| 2026-11-16 | The padlock and key are original SVG in the brand colours, animated by one CSS sequence of 2.7 seconds.             | Agent default | The owner set the sequence and its length, 2.6 to 2.8 seconds. The key's quarter turn shows as the key narrowing edge-on. The open padlock is the resting state, shown where nothing animates.         |
 
-## Statements on the public homepage that the owner should confirm
+## Statements on the public homepage that the owner was asked to confirm
+
+**Confirmed by the owner on 16 November 2026.** They are now owner commitments in the table above.
+The list is kept as it was put to the owner.
 
 The homepage presents these as part of the plan. They are consistent with the documented roadmap,
 but they are public commitments made on the owner's behalf, so the owner should confirm or remove
@@ -59,8 +72,16 @@ ones a cryptographer must be involved. The handoff (`agent-handoff/NEXT_AGENT_PR
 | Detecting server rollback and withheld data                        | Design work and cryptographic review                     |
 | Desktop application technology                                     | Owner, after a written comparison                        |
 | Backend technology and hosting                                     | Owner                                                    |
-| Whether to keep `/cart` and `/shop`                                | Owner                                                    |
-| The loading screen: keep, shorten or remove; its artwork           | Owner                                                    |
 | Licence                                                            | Owner                                                    |
 | Privacy policy and terms of service                                | Owner, with legal advice                                 |
 | Contact channel                                                    | Owner                                                    |
+
+## Closed
+
+Questions that were listed as open and have since been decided. The decisions are in the table at
+the top.
+
+| Question                                                 | Decided           | Outcome                                                                             |
+| -------------------------------------------------------- | ----------------- | ----------------------------------------------------------------------------------- |
+| Whether to keep `/cart` and `/shop`                      | 2026-11-16, Owner | Kept, as application placeholders.                                                  |
+| The loading screen: keep, shorten or remove; its artwork | 2026-11-16, Owner | Kept, three seconds, application only. A padlock and key replace the shopping cart. |
