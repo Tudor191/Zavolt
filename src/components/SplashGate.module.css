@@ -5,11 +5,13 @@
   width: 100%;
 }
 
-/* Carried over from the original site's `.animate-bottom` / `#myDiv`. */
-.reveal {
+.content {
   position: relative;
   width: 100%;
-  text-align: center;
+}
+
+/* Carried over from the original site's `.animate-bottom`: runs once, when the loader ends. */
+.revealed {
   animation: revealFromBottom 1s;
 }
 
@@ -26,7 +28,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .reveal {
+  .revealed {
     animation: none;
   }
 }

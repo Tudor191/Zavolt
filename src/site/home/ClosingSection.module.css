@@ -1,0 +1,75 @@
+.section {
+  padding-block: clamp(8px, 2vw, 24px) clamp(64px, 8vw, 112px);
+}
+
+.panel {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 20px;
+  overflow: hidden;
+  padding: clamp(48px, 9vw, 104px) clamp(24px, 6vw, 64px);
+  border: 1px solid rgb(158 4 209 / 0.45);
+  border-radius: 32px;
+  background:
+    radial-gradient(60% 90% at 50% 120%, rgb(158 4 209 / 0.38), rgb(158 4 209 / 0) 70%),
+    var(--color-surface);
+  text-align: center;
+}
+
+/* The dashboard's ring once more, large and faint, behind the call to action. */
+.ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(640px, 90%);
+  aspect-ratio: 1;
+  border: 2px solid rgb(207 157 255 / 0.22);
+  border-left-color: transparent;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotateX(72deg) rotateZ(-30deg);
+  pointer-events: none;
+}
+
+.ring::after {
+  content: '';
+  position: absolute;
+  top: 14.6%;
+  left: 14.6%;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  background-color: rgb(207 157 255 / 0.35);
+}
+
+@media (max-width: 720px) {
+  .ring {
+    display: none;
+  }
+}
+
+.title {
+  position: relative;
+  max-width: 18ch;
+  font-size: clamp(2rem, 1.3rem + 3vw, 3.5rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.text {
+  position: relative;
+  color: var(--color-text-secondary);
+  font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+}
+
+.actions {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+}

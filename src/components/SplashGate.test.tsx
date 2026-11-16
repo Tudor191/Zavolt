@@ -3,12 +3,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { REDUCED_MOTION_QUERY, stubMatchMedia } from '../test/matchMedia.ts';
 import { SplashGate } from './SplashGate.tsx';
 
-function renderGate() {
-  return render(
-    <SplashGate>
+function gate(active?: boolean) {
+  return (
+    <SplashGate active={active}>
       <p>Application content</p>
-    </SplashGate>,
+    </SplashGate>
   );
+}
+
+function renderGate(active?: boolean) {
+  return render(gate(active));
 }
 
 describe('SplashGate', () => {
@@ -68,5 +72,40 @@ describe('SplashGate', () => {
     unmount();
 
     expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('stays out of the way while inactive', () => {
+    renderGate(false);
+
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(screen.getByText('Application content')).toBeInTheDocument();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('plays the first time it becomes active, then never again', () => {
+    const { rerender } = renderGate(false);
+
+    rerender(gate(true));
+    expect(screen.getByRole('status')).toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(3000);
+    });
+    expect(screen.getByText('Application content')).toBeInTheDocument();
+
+    rerender(gate(false));
+    rerender(gate(true));
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(screen.getByText('Application content')).toBeInTheDocument();
+  });
+
+  it('keeps the content mounted when it stops being active, so the page underneath survives', () => {
+    stubMatchMedia([REDUCED_MOTION_QUERY]);
+    const { rerender } = renderGate(true);
+    const content = screen.getByText('Application content');
+
+    rerender(gate(false));
+
+    expect(screen.getByText('Application content')).toBe(content);
   });
 });

@@ -2,26 +2,49 @@
 
 Zavolt is a password manager in early development. This repository holds its web application.
 
-> **Status: foundation only.** Zavolt cannot store, encrypt or sync anything yet, and it has no
-> sign-in. Do not put real credentials anywhere near it. Nothing here has been security-audited.
+> **Status: foundation and public website only.** Zavolt cannot store, encrypt or sync anything
+> yet, and it has no sign-in. Do not put real credentials anywhere near it. Nothing here has been
+> security-audited.
 
 ## What exists today
 
-| Area                                                          | Status      | Notes                                                                                                      |
-| ------------------------------------------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------- |
-| Dashboard with links to Contact us, Vault and Account         | Implemented | The page a signed-in user will land on. Today it is shown to every visitor.                                |
-| Loading screen                                                | Implemented | Shown for three seconds on each page load, as in the original site. Skipped when reduced motion is on.     |
-| Client-side routing, including the original `.html` addresses | Implemented | `/`, `/contact`, `/vault`, `/account`, `/cart`, `/shop`, and a not-found page.                             |
-| Contact us, Vault, Account, Cart and Shop pages               | Placeholder | Each says "This section is not available yet." and links back. No functionality.                           |
-| Browser hardening (CSP, Trusted Types, no third-party code)   | Partial     | Shipped in the page. The HTTP response headers a host must add are listed in [SECURITY.md](./SECURITY.md). |
-| Sign-up, sign-in, sessions                                    | Planned     | No authentication of any kind exists.                                                                      |
-| Vault: storing, encrypting, syncing credentials               | Planned     | No cryptography has been written. See [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md).                      |
-| Backend API, desktop application, browser extension           | Planned     | Not started.                                                                                               |
-| Account recovery, device management, key rotation             | Planned     | Design direction only.                                                                                     |
+| Area                                                            | Status      | Notes                                                                                                                            |
+| --------------------------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Public homepage at `/`                                          | Implemented | Describes the product, its security design and roadmap. Every feature carries a Done, In development or Planned label.           |
+| Site header, footer and mobile menu                             | Implemented | Shared by every public page.                                                                                                     |
+| Dashboard at `/app` with links to Contact us, Vault and Account | Implemented | The page a signed-in user will land on. **Today it is shown to every visitor**: nothing is authenticated.                        |
+| Loading screen                                                  | Implemented | Three seconds, once per page load, the first time an application page opens. Never on public pages. Skipped with reduced motion. |
+| Loading screen artwork                                          | Implemented | A padlock and key: the key goes in and turns, and the padlock opens. A decorative animation: nothing is unlocked or checked.     |
+| Client-side routing, including the original `.html` addresses   | Implemented | See [Routes](#routes).                                                                                                           |
+| Sign-in and registration pages                                  | Placeholder | Say plainly that neither exists yet. No forms.                                                                                   |
+| Contact, privacy policy and terms of service pages              | Placeholder | No contact channel, policy or terms have been published.                                                                         |
+| Vault, Account, Cart and Shop pages                             | Placeholder | Each says "This section is not available yet." and links back to the dashboard.                                                  |
+| Browser hardening (CSP, Trusted Types, no third-party code)     | Partial     | Shipped in the page. The HTTP response headers a host must add are listed in [SECURITY.md](./SECURITY.md).                       |
+| Sign-up, sign-in, sessions                                      | Planned     | No authentication of any kind exists.                                                                                            |
+| Vault: storing, encrypting, syncing credentials                 | Planned     | No cryptography has been written. See [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md).                                            |
+| Backend API, desktop application, browser extension             | Planned     | Not started.                                                                                                                     |
+| Account recovery, device management, key rotation               | Planned     | Design direction only.                                                                                                           |
 
 `/cart` and `/shop` come from the site template this project started from. They are not linked from
-the dashboard and exist only so old addresses keep working. Whether to remove or repurpose them is an
-open product decision.
+anywhere. The owner has decided to keep them as application placeholders, so their addresses, and
+the original `.html` ones, keep working (see [docs/DECISIONS.md](./docs/DECISIONS.md)).
+
+## Routes
+
+| Address                                     | Page                                         | Area        |
+| ------------------------------------------- | -------------------------------------------- | ----------- |
+| `/`                                         | Public homepage                              | Public site |
+| `/login`, `/register`                       | Sign-in and registration placeholders        | Public site |
+| `/contact`, `/privacy`, `/terms`            | Contact, privacy and terms placeholders      | Public site |
+| `/app`                                      | Dashboard                                    | Application |
+| `/vault`, `/account`, `/cart`, `/shop`      | Section placeholders                         | Application |
+| `/index.html`                               | Redirects to `/app` (the original dashboard) |             |
+| `/account.html`, `/cart.html`, `/shop.html` | Redirect to `/account`, `/cart`, `/shop`     |             |
+| anything else                               | Not found                                    | Public site |
+
+Public pages share the site header and footer. Application pages keep the original full-screen
+look. **Neither area is protected**: until authentication and a backend exist, every address is open
+to every visitor.
 
 ## Getting started
 
@@ -63,18 +86,20 @@ npx playwright install chromium
 
 ```text
 index.html              Application shell, including the Content-Security-Policy
-public/                 Files served as they are (the logo, third-party notices)
+public/                 Files served as they are: favicons, the original logo, third-party notices
 src/
   main.tsx              Entry point: fonts, global styles, frame check, React root
-  App.tsx               Router and loading screen
-  AppRoutes.tsx         Route table and focus handling after navigation
-  sections.ts           Sections, their routes, and the original site's addresses
+  App.tsx               Router
+  AppRoutes.tsx         Route table, loading screen placement, focus and scrolling after navigation
+  sections.ts           Every route, which area it belongs to, and the original site's addresses
   components/           Loader, icon set and the shared message page
-  pages/                Dashboard, section placeholder and not-found pages
+  pages/                Homepage, dashboard, placeholder and not-found pages
+  site/                 The public website: layout, header, footer, brand mark, shared UI
+    home/               The homepage sections
   styles/global.css     Reset, design tokens and accent colours
   test/                 Test setup
 e2e/                    End-to-end tests (Playwright)
-docs/                   Architecture and the audit of the original site
+docs/                   Architecture, decisions, the audit of the original site, agent handoff
 .github/                CI workflow and Dependabot configuration
 ```
 
@@ -86,8 +111,9 @@ Continuous integration runs three jobs on every pull request, on pushes to `main
 
 - **verify**: type-check, lint, formatting, unit tests, production build.
 - **e2e**: the end-to-end suite against the production build, at desktop and phone sizes. It covers
-  navigation by mouse, keyboard and touch, the Content-Security-Policy and that the browser enforces
-  it, accessibility scans, and layout at seven screen widths.
+  navigation by mouse, keyboard and touch (including the mobile menu), the Content-Security-Policy
+  and that the browser enforces it, accessibility scans of every kind of page, layout from 320px to
+  1920px, reduced motion, and that no page has a form, a text field or a password field.
 - **audit**: `npm audit` and `npm audit signatures`.
 
 ## Dependencies
@@ -128,8 +154,12 @@ and the rules that code in this repository must follow.
 
 - [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md): how the application is built today and the planned
   design of the full product, including zero-knowledge encryption.
+- [docs/DECISIONS.md](./docs/DECISIONS.md): decisions taken so far, who took them, and what is
+  still open.
 - [docs/AUDIT.md](./docs/AUDIT.md): the audit of the original static site and what was done about
   each finding.
+- [docs/agent-handoff/NEXT_AGENT_PROMPT.md](./docs/agent-handoff/NEXT_AGENT_PROMPT.md): a complete
+  brief for the next coding agent working on this repository.
 
 ## Licence
 

@@ -99,6 +99,11 @@ Outcome is one of **Fixed**, **Kept** (left as it was on purpose, with the reaso
 | K3  | The favicon: a white "TDR" monogram, 440×333, invisible on light browser themes. | Same reason. Only its declared type was corrected.                                          |
 | K4  | No licence file.                                                                 | Choosing a licence is the owner's decision.                                                 |
 
+K1 to K3 have been decided since the audit, on 16 November 2026. The favicon was replaced by the
+Zavolt mark. The owner decided to keep `/cart` and `/shop` as placeholders and to replace the
+loader's shopping cart with a padlock and key. See [DECISIONS.md](./DECISIONS.md). The table above
+records the state at the time of the migration.
+
 ## What changes for visitors
 
 - A build step is required. `dist/` is deployed, not the repository root.
