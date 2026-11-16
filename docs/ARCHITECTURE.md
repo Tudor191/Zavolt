@@ -48,7 +48,7 @@ documents lose everything held in memory on each navigation.
 | `src/AppRoutes.tsx`           | The route table, the loading screen's placement, and focus and scrolling after navigation.             |
 | `src/sections.ts`             | Every route and the area it belongs to, the placeholder texts, and the original site's addresses.      |
 | `src/components/SplashGate`   | Shows the loader before the first application page of a page load, then never again.                   |
-| `src/components/SplashLoader` | The animated loader.                                                                                   |
+| `src/components/SplashLoader` | The loader's padlock and key: SVG, animated by CSS in its module. Decorative only.                     |
 | `src/components/Icon`         | Twenty Ionicons icons, bundled as inline SVG.                                                          |
 | `src/components/MessagePage`  | A page that states one thing and offers one way back.                                                  |
 | `src/pages/`                  | Homepage, dashboard, section placeholder and not-found pages.                                          |
@@ -141,7 +141,7 @@ serves the files, and no hosting has been chosen. The list is in [SECURITY.md](.
 | Types      | TypeScript, strict             | Application, configuration and tests.                                                                                 |
 | Lint       | oxlint with type-aware rules   | Correctness, accessibility, and the security rules in SECURITY.md.                                                    |
 | Unit       | Vitest, Testing Library, jsdom | Routes and areas, redirects, the loading screen, focus and scrolling, the mobile menu, honesty.                       |
-| End to end | Playwright with axe-core       | The production build in Chromium at desktop and phone sizes: navigation, menu, layout, policy, accessibility, motion. |
+| End to end | Playwright with axe-core       | The production build in Chromium, desktop and phone: navigation, menu, layout, policy, accessibility, motion, loader. |
 
 ### 1.7 Known limits of the current code
 
@@ -150,9 +150,9 @@ serves the files, and no hosting has been chosen. The list is in [SECURITY.md](.
   authentication exists.
 - **The loading screen waits on a timer, not on work.** Nothing is loading during those three
   seconds. When start-up does real work, the gate should wait for that instead.
-- **The loader artwork is still a shopping cart.** It comes from the original site and appears only
-  in the application area. The public site and the favicon use the Zavolt mark instead. Replacing
-  the loader artwork is a branding decision.
+- **The loader's padlock opening is a picture, not an operation.** Nothing is unlocked, checked or
+  decrypted while it plays, and assistive technology is told only that the application is loading.
+  When a real unlock exists, it must report its own progress, not borrow this animation.
 - **Pages are rendered in the browser.** Search engines and link previews see the bare shell and the
   description in `index.html`. Pre-rendering the public pages would fix that.
 - **End-to-end tests run in Chromium only.**
@@ -397,7 +397,6 @@ services/api      backend
 | Backend technology and hosting                                             | Hosting also decides how the headers in SECURITY.md are sent.              |
 | Detecting withheld or rolled-back data                                     | See 2.6.                                                                   |
 | Sharing between users                                                      | Needs public keys. The hierarchy in 2.4 leaves room for it.                |
-| The `/cart` and `/shop` routes, the loader artwork, the favicon            | Inherited from the original template.                                      |
 | Licence                                                                    | None chosen.                                                               |
 
 ### 2.14 Suggested order of work

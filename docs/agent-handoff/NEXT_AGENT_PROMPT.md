@@ -63,8 +63,9 @@ nobody can sign in. Never write, in code, documentation, a pull request or page 
 
 ## 2. State snapshot
 
-_Last refreshed: 16 November 2026, at the end of Phase 2, when its pull request was opened.
-Whoever finishes a phase must refresh this section._
+_Last refreshed: 16 November 2026, when Phase 2 was finalised on its pull request: the owner's
+decisions recorded and the loader's artwork replaced. Whoever finishes a phase must refresh this
+section._
 
 Verify every line below yourself (section 11) before relying on it.
 
@@ -73,7 +74,15 @@ Verify every line below yourself (section 11) before relying on it.
 | Phase | What it was                                                                                         | State when this was last refreshed                                                                 |
 | ----- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | 1     | Audit of the original static site, migration to React and TypeScript, tooling, tests, CI, documents | Merged into `main` as commit `742b205` (squash merge of pull request 1), with the owner's approval |
-| 2     | Public homepage at `/`, dashboard moved to `/app`, placeholders, brand mark, this document          | Pull request open from `feature/public-landing-page` into `main`, waiting for the owner's review   |
+| 2     | Homepage, dashboard moved to `/app`, placeholders, brand mark, padlock-and-key loader, this file    | Pull request 2 open from `feature/public-landing-page` into `main`: not merged, awaiting review    |
+
+Pull request 2 is <https://github.com/Tudor191/Zavolt/pull/2>. It was opened with its branch at
+`93194d8`. The finalisation then added commits on top of it that record the owner's decisions and
+replace the loader's artwork. Only the owner may merge it. To see its current head:
+
+```bash
+git ls-remote origin feature/public-landing-page
+```
 
 ### 2.2 Branches
 
@@ -85,10 +94,10 @@ Verify every line below yourself (section 11) before relying on it.
 | `feature/public-landing-page`                    | The Phase 2 implementation branch.                                 | Only continue on it if the owner asks you to. |
 
 When this was last refreshed, `main` was at `742b205`, `conversie-html-to-typescript` was untouched at
-`cbc08b4`, and **the repository's default branch was still `conversie-html-to-typescript`**. The
-owner wants `main` to be the default. The agent session that wrote this could not change it: its
-GitHub tools have no repository-settings operation, and its environment allows the GitHub CLI for
-search only. Section 5.3 gives the manual steps. Check the current default before you assume either.
+`cbc08b4`, and **the repository's default branch was `main`**. The owner switched it by hand after
+Phase 1: the agent session of that phase could not, because its GitHub tools had no
+repository-settings operation (section 5.3). Check the current default with
+`git ls-remote --symref origin HEAD` before you rely on it.
 
 If the Phase 2 pull request has been merged, `main` contains everything described below. If it is
 still open, `main` does not yet contain the homepage: section 4 then describes the branch, not
@@ -105,7 +114,9 @@ still open, `main` does not yet contain the homepage: section 4 then describes t
 - The dashboard at `/app`: three animated rings that link to Contact us, Vault and Account,
   unchanged from the original site.
 - A loading screen that shows for three seconds, once per page load, the first time an application
-  page opens. Public pages never show it.
+  page opens. Public pages never show it. Its artwork is a padlock and a key, drawn in SVG and
+  animated once in CSS: the key goes in, turns, the padlock opens and the key comes out. It is
+  decorative. Nothing is unlocked, checked or decrypted while it plays.
 - Application placeholder pages that state "This section is not available yet." and link back.
 - Redirects from the original site's `.html` addresses.
 - Browser hardening that ships inside the page (section 6.2).
@@ -132,14 +143,15 @@ None of the following has been started. Do not describe any of it as existing.
 - **Nothing is authenticated.** `/app` and every other route are served to every visitor. No code
   may assume a visitor has been identified.
 - The loading screen waits on a timer. No work happens during it.
-- The loading artwork is still a shopping cart, inherited from the template the project began as.
-  It appears only in the application area; the public site uses the Zavolt mark. Replacing it is an
-  open decision.
-- `/cart` and `/shop` are routes inherited from that template. They are kept so old addresses keep
-  working. Removing them is the owner's decision.
-- The homepage states some commitments on the owner's behalf (a specialist review of the encryption
-  design, an independent audit before release, no tracking code). They are listed in
-  `docs/DECISIONS.md` for the owner to confirm.
+- The padlock opening in the loader is a picture, not an operation. Never describe it as unlocking
+  anything, and never reuse it to suggest progress a real unlock is not making.
+- `/cart` and `/shop` are inherited from the template the project began as. The owner has decided
+  to keep them as application placeholders, with their old `.html` addresses redirecting.
+- The homepage states four security commitments: a specialist review of the encryption design
+  before it is built, an independent audit before any public release, no advertising or tracking
+  code, and no recovery design that lets Zavolt decrypt a vault. The owner confirmed them on
+  16 November 2026 (`docs/DECISIONS.md`). They are commitments about the future. None of them is a
+  feature, and nothing may describe them as done.
 - Browser checks run in Chromium only. Firefox and Safari have not been tested.
 - The development server does not apply the Content-Security-Policy (section 6.2).
 - Pages are rendered in the browser. Nothing is pre-rendered, so search engines and link previews
@@ -177,7 +189,7 @@ else is tooling.
 | `src/AppRoutes.tsx`                       | The route table, and focus handling after navigation.                                             |
 | `src/sections.ts`                         | The list of application sections, their routes, and the original site's addresses.                |
 | `src/components/SplashGate.tsx`           | Shows the loader for three seconds, then reveals its children.                                    |
-| `src/components/SplashLoader.tsx`         | The animated loader.                                                                              |
+| `src/components/SplashLoader.tsx`         | The loader's padlock and key: SVG, animated by CSS in its module. Decorative.                     |
 | `src/components/Icon.tsx`                 | Icons bundled as inline SVG (from Ionicons, MIT licence).                                         |
 | `src/components/MessagePage.tsx`          | A page that states one thing and links back. Used by every placeholder.                           |
 | `src/pages/DashboardPage.tsx`             | The dashboard.                                                                                    |
@@ -215,6 +227,7 @@ else is tooling.
 | `src/site/home/*`                                    | The homepage sections and the CSS-only orbit illustration.                                 |
 | `src/motion.ts`, `src/classNames.ts`                 | Reduced-motion check; joining CSS Module class names.                                      |
 | `e2e/site.spec.ts`                                   | End-to-end tests for the public site.                                                      |
+| `src/components/SplashLoader.test.tsx`               | Unit tests for the loader's drawing. Its animation is tested end to end, in `app.spec.ts`. |
 | `docs/DECISIONS.md`                                  | The decision log (section 15).                                                             |
 | `public/favicon.svg`, `.ico`, `apple-touch-icon.png` | Favicons. `public/images/logo.png` (the old "TDR" image) is kept so its address works.     |
 
@@ -241,7 +254,7 @@ Before Phase 2 the dashboard was at `/`. Phase 2 moved it to `/app` and made `/`
 | `/privacy`, `/terms`                        | State that no policy or terms have been published | Public site | Placeholder                    |
 | `/app`                                      | The application dashboard                         | Application | Implemented, not authenticated |
 | `/vault`, `/account`                        | State that the section is not available yet       | Application | Placeholder                    |
-| `/cart`, `/shop`                            | Same, kept for old addresses                      | Application | Placeholder                    |
+| `/cart`, `/shop`                            | Same; kept by the owner's decision                | Application | Placeholder                    |
 | `/index.html`                               | Redirects to `/app`                               |             | Redirect                       |
 | `/account.html`, `/cart.html`, `/shop.html` | Redirect to `/account`, `/cart`, `/shop`          |             | Redirect                       |
 | anything else                               | Not found                                         | Public site | Implemented                    |
@@ -500,8 +513,10 @@ ask the owner. For the cryptographic ones, a cryptographer must be involved.
 | **Backend technology and hosting**              | Not chosen. Hosting also decides how the response headers in `SECURITY.md` are sent, whether the API shares the application's origin, and where rate limiting lives.                                                                                                                                                                                    | Owner's decision.                                                    |
 
 Other open decisions: one shared client core in a compiled language or separate libraries per
-platform; sharing between users; whether to keep `/cart` and `/shop`; the loader artwork; the
-licence; the privacy policy and terms.
+platform; sharing between users; the licence; the privacy policy and terms; a contact channel.
+
+Decided on 16 November 2026, and no longer open: `/cart` and `/shop` stay, and the loader is a
+padlock and key (`docs/DECISIONS.md`).
 
 ## 11. Before you change anything
 
@@ -654,9 +669,20 @@ found a requirement change that needs the owner's approval, or you have broken s
 **The loading screen**
 
 - It lasts three seconds and shows once per page load, the first time an application page opens.
-  Public pages never wait for it.
+  Public pages never wait for it. The owner decided this; do not change it without the owner.
 - It is skipped when the visitor asks for reduced motion.
-- It announces itself to assistive technology and has a main landmark and a heading.
+- It announces itself to assistive technology and has a main landmark and a heading. The status says
+  only "Loading...". The drawing is hidden from assistive technology and must never announce that
+  anything is being unlocked.
+- Its drawing is a padlock and a key, animated by one CSS sequence of 2.7 seconds that plays once:
+  the key comes in and lines up, goes into the keyhole, turns, the shackle opens, and the key comes
+  out and fades. It ends before the three seconds are up, so the open padlock is still showing when
+  the application appears. No JavaScript drives it.
+- The drawing's resting state, its CSS without animation, is that open padlock. Each animation
+  starts at the beginning of the sequence and has no `to` keyframe, so it ends on the resting
+  state.
+- Its end-to-end tests pause the animations and seek them with `getAnimations()`. They do not wait
+  for frames. Keep them that way.
 
 **Navigation**
 
@@ -769,9 +795,13 @@ the owner asks for.
 | 9    | Build the browser extension, then the desktop application                                   |                                                                    |
 | 10   | Commission an independent security audit before any public release                          | No security claim may be made before this.                         |
 
+Steps 4 and 10 are also owner commitments (`docs/DECISIONS.md`): the encryption design is reviewed
+by specialists before any of it is built, and an independent audit takes place before any public
+release.
+
 Smaller things that are safe to do when asked, and need no open decision: accessibility
-improvements, testing in Firefox and Safari, pre-rendering the public pages, replacing the loader
-artwork once the owner decides, and content changes to the homepage.
+improvements, testing in Firefox and Safari, pre-rendering the public pages, and content changes to
+the homepage.
 
 ## Appendix: things that will surprise you
 
@@ -785,7 +815,6 @@ artwork once the owner decides, and content changes to the homepage.
 - **Following a section link is handled in `src/AppRoutes.tsx`,** not by the browser: client-side
   navigation does not scroll to a fragment. Section headings have `tabIndex={-1}` so they can take
   focus. jsdom has no scrolling, so the unit-test setup stubs `scrollIntoView` and `scrollTo`.
-
 - **The linter is oxlint, not ESLint.** There is no ESLint configuration. Suppression comments start
   with `oxlint-disable`.
 - **TypeScript 7 is the native compiler.** Use `npm run typecheck`. Do not downgrade TypeScript.
@@ -798,6 +827,13 @@ artwork once the owner decides, and content changes to the homepage.
   does.
 - **The accessibility scanner needs timers.** It hangs if the page clock is paused, so the
   loading-screen test asserts on the accessibility tree instead.
+- **Playwright's `page.clock` moves timers, not CSS animations.** The loader's animation runs on the
+  document's own timeline. Its tests pause it and set `currentTime` through `getAnimations()`.
+- **`userEvent` hangs under Vitest's fake timers.** Testing Library's asynchronous wrapper waits on
+  a `setTimeout(0)` that only Jest's fake timers advance. Tests with fake timers use `fireEvent`.
+- **A test that waits for a page can hide a loading screen that played again.** It closes by itself
+  after three seconds. The test for once per page load keeps the page clock stopped, so a replay
+  would never close.
 - **Text inside `<noscript>` is invisible to Playwright's text locators.** Locate it by element.
 - **`playwright-core` is pinned through `overrides` in `package.json`** so that only one copy is
   installed. Keep it equal to `@playwright/test`.

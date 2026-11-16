@@ -14,6 +14,7 @@ Zavolt is a password manager in early development. This repository holds its web
 | Site header, footer and mobile menu                             | Implemented | Shared by every public page.                                                                                                     |
 | Dashboard at `/app` with links to Contact us, Vault and Account | Implemented | The page a signed-in user will land on. **Today it is shown to every visitor**: nothing is authenticated.                        |
 | Loading screen                                                  | Implemented | Three seconds, once per page load, the first time an application page opens. Never on public pages. Skipped with reduced motion. |
+| Loading screen artwork                                          | Implemented | A padlock and key: the key goes in and turns, and the padlock opens. A decorative animation: nothing is unlocked or checked.     |
 | Client-side routing, including the original `.html` addresses   | Implemented | See [Routes](#routes).                                                                                                           |
 | Sign-in and registration pages                                  | Placeholder | Say plainly that neither exists yet. No forms.                                                                                   |
 | Contact, privacy policy and terms of service pages              | Placeholder | No contact channel, policy or terms have been published.                                                                         |
@@ -25,8 +26,8 @@ Zavolt is a password manager in early development. This repository holds its web
 | Account recovery, device management, key rotation               | Planned     | Design direction only.                                                                                                           |
 
 `/cart` and `/shop` come from the site template this project started from. They are not linked from
-anywhere and exist only so old addresses keep working. Whether to remove or repurpose them is an open
-product decision.
+anywhere. The owner has decided to keep them as application placeholders, so their addresses, and
+the original `.html` ones, keep working (see [docs/DECISIONS.md](./docs/DECISIONS.md)).
 
 ## Routes
 
