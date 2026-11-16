@@ -63,17 +63,17 @@ nobody can sign in. Never write, in code, documentation, a pull request or page 
 
 ## 2. State snapshot
 
-_Last refreshed: 16 November 2026, at the start of Phase 2, before any Phase 2 change was made.
+_Last refreshed: 16 November 2026, at the end of Phase 2, when its pull request was opened.
 Whoever finishes a phase must refresh this section._
 
 Verify every line below yourself (section 11) before relying on it.
 
 ### 2.1 Phases
 
-| Phase | What it was                                                                                         | State when this was last refreshed                                           |
-| ----- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| 1     | Audit of the original static site, migration to React and TypeScript, tooling, tests, CI, documents | Pull request 1 open, all checks green, owner has authorised merging it       |
-| 2     | Public homepage at `/`, dashboard moved to `/app`, sign-in and registration placeholders            | In progress on `feature/public-landing-page`; to be opened as a pull request |
+| Phase | What it was                                                                                         | State when this was last refreshed                                                                 |
+| ----- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| 1     | Audit of the original static site, migration to React and TypeScript, tooling, tests, CI, documents | Merged into `main` as commit `742b205` (squash merge of pull request 1), with the owner's approval |
+| 2     | Public homepage at `/`, dashboard moved to `/app`, placeholders, brand mark, this document          | Pull request open from `feature/public-landing-page` into `main`, waiting for the owner's review   |
 
 ### 2.2 Branches
 
@@ -81,27 +81,36 @@ Verify every line below yourself (section 11) before relying on it.
 | ------------------------------------------------ | ------------------------------------------------------------------ | --------------------------------------------- |
 | `main`                                           | The integration branch. Every pull request targets it.             | Never commit to it directly.                  |
 | `conversie-html-to-typescript`                   | The original branch, holding the original static site (9 commits). | Never change or delete it.                    |
-| `claude/zavolt-html-typescript-migration-w69ttq` | The Phase 1 implementation branch (pull request 1).                | Leave it. Do not delete it.                   |
+| `claude/zavolt-html-typescript-migration-w69ttq` | The Phase 1 implementation branch (pull request 1, merged).        | Leave it. Do not delete it.                   |
 | `feature/public-landing-page`                    | The Phase 2 implementation branch.                                 | Only continue on it if the owner asks you to. |
 
-When this was last refreshed, `main` and `conversie-html-to-typescript` both pointed at commit
-`cbc08b4` and the repository's default branch was still `conversie-html-to-typescript`. The owner
-wants `main` to be the default. Changing it needs repository administration rights, which an agent
-session may not have (section 5.3).
+When this was last refreshed, `main` was at `742b205`, `conversie-html-to-typescript` was untouched at
+`cbc08b4`, and **the repository's default branch was still `conversie-html-to-typescript`**. The
+owner wants `main` to be the default. The agent session that wrote this could not change it: its
+GitHub tools have no repository-settings operation, and its environment allows the GitHub CLI for
+search only. Section 5.3 gives the manual steps. Check the current default before you assume either.
+
+If the Phase 2 pull request has been merged, `main` contains everything described below. If it is
+still open, `main` does not yet contain the homepage: section 4 then describes the branch, not
+`main`.
 
 ### 2.3 What is implemented
 
-- A React single-page application with client-side routing.
-- The dashboard: three animated rings that link to Contact us, Vault and Account.
-- A loading screen that shows for three seconds, once per page load, before the application area.
-- Placeholder pages that state "This section is not available yet." and link back.
+- A public homepage at `/`: hero, product, security, platforms, about and roadmap, and a closing
+  call to action. Every feature and platform carries a status label.
+- A site header with a mobile menu, and a site footer, shared by every public page.
+- The Zavolt brand mark and favicons (`src/site/Brand.tsx`, `public/favicon.*`).
+- Placeholder pages that say plainly what does not exist: sign-in, registration, contact, privacy
+  policy and terms of service.
+- The dashboard at `/app`: three animated rings that link to Contact us, Vault and Account,
+  unchanged from the original site.
+- A loading screen that shows for three seconds, once per page load, the first time an application
+  page opens. Public pages never show it.
+- Application placeholder pages that state "This section is not available yet." and link back.
 - Redirects from the original site's `.html` addresses.
 - Browser hardening that ships inside the page (section 6.2).
 - Type-checking, linting, unit tests, end-to-end tests and continuous integration.
-- Documentation of the current state and of the planned design.
-
-Phase 2 adds a public homepage, a site header and footer, a brand mark, and placeholder pages for
-signing in and registering. See section 4 for the routes.
+- Documentation of the current state, the decisions so far, and the planned design.
 
 ### 2.4 What does not exist
 
@@ -115,6 +124,7 @@ None of the following has been started. Do not describe any of it as existing.
 - The desktop application and the browser extension.
 - Hosting, and therefore the security response headers a host must send (`SECURITY.md`).
 - Privacy policy and terms of service. No legal text has been written.
+- A contact channel.
 - A licence. None has been chosen.
 
 ### 2.5 Known limitations
@@ -122,14 +132,18 @@ None of the following has been started. Do not describe any of it as existing.
 - **Nothing is authenticated.** `/app` and every other route are served to every visitor. No code
   may assume a visitor has been identified.
 - The loading screen waits on a timer. No work happens during it.
-- The loading artwork is a shopping cart, inherited from the template the project began as. The
-  owner does not want shopping-cart artwork or the old "TDR" image used as the brand identity.
-  Replacing the loader artwork is still an open decision.
+- The loading artwork is still a shopping cart, inherited from the template the project began as.
+  It appears only in the application area; the public site uses the Zavolt mark. Replacing it is an
+  open decision.
 - `/cart` and `/shop` are routes inherited from that template. They are kept so old addresses keep
   working. Removing them is the owner's decision.
+- The homepage states some commitments on the owner's behalf (a specialist review of the encryption
+  design, an independent audit before release, no tracking code). They are listed in
+  `docs/DECISIONS.md` for the owner to confirm.
 - Browser checks run in Chromium only. Firefox and Safari have not been tested.
 - The development server does not apply the Content-Security-Policy (section 6.2).
-- Pages are rendered in the browser. Nothing is pre-rendered on a server.
+- Pages are rendered in the browser. Nothing is pre-rendered, so search engines and link previews
+  see only the shell and its description.
 
 ## 3. Technology and repository map
 
@@ -185,32 +199,55 @@ else is tooling.
 | `docs/AUDIT.md`                           | The audit of the original static site and the outcome of every finding.                           |
 | `docs/agent-handoff/NEXT_AGENT_PROMPT.md` | This file.                                                                                        |
 
-### 3.3 What Phase 2 adds
+### 3.3 Files added in Phase 2
 
-Phase 2 was in progress when this section was written. Check the tree for the exact files.
+| Path                                                 | What it is                                                                                 |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `src/pages/HomePage.tsx`                             | The homepage: composes the sections below.                                                 |
+| `src/site/SiteLayout.tsx`                            | Frame of every public page: skip link, header, the page, footer.                           |
+| `src/site/SiteHeader.tsx`                            | Header and mobile menu (a disclosure button).                                              |
+| `src/site/SiteFooter.tsx`                            | Footer with the development status and links.                                              |
+| `src/site/Brand.tsx`                                 | The brand mark and wordmark. `public/favicon.svg` is the same drawing.                     |
+| `src/site/ButtonLink.tsx`                            | A link styled as a button. The public site has no real buttons apart from the menu toggle. |
+| `src/site/StatusBadge.tsx`                           | The Done / In development / Planned label.                                                 |
+| `src/site/SectionHeader.tsx`                         | Eyebrow, focusable `<h2>` and introduction for a homepage section.                         |
+| `src/site/ui.module.css`                             | Shared styles: container, sections, buttons, cards.                                        |
+| `src/site/home/*`                                    | The homepage sections and the CSS-only orbit illustration.                                 |
+| `src/motion.ts`, `src/classNames.ts`                 | Reduced-motion check; joining CSS Module class names.                                      |
+| `e2e/site.spec.ts`                                   | End-to-end tests for the public site.                                                      |
+| `docs/DECISIONS.md`                                  | The decision log (section 15).                                                             |
+| `public/favicon.svg`, `.ico`, `apple-touch-icon.png` | Favicons. `public/images/logo.png` (the old "TDR" image) is kept so its address works.     |
 
-| Path                | What it is                                                                               |
-| ------------------- | ---------------------------------------------------------------------------------------- |
-| `src/site/`         | The public website: header, footer, brand mark, and the homepage sections.               |
-| `src/pages/`        | Gains the homepage and the sign-in and registration placeholder pages.                   |
-| `docs/DECISIONS.md` | The log of decisions (section 15).                                                       |
-| `public/`           | Gains a Zavolt favicon. `public/images/logo.png` (the old "TDR" image) is kept in place. |
+How to add a page:
+
+- **A public page:** add a `<Route>` inside the `SiteLayout` route in `src/AppRoutes.tsx`. The page
+  renders one `<main id="main-content" tabIndex={-1}>`, one `<h1 tabIndex={-1}>` and a `<title>`.
+  `MessagePage` already does all of that.
+- **An application page:** add it to `SECTIONS` in `src/sections.ts` with `area: 'application'`.
+  `isApplicationPath` then plays the loading screen for it, and `AppRoutes` renders it.
+- Either way, add it to the unit tests in `src/AppRoutes.test.tsx` and to the accessibility and
+  honesty lists in the end-to-end tests.
 
 ## 4. Routes
 
-These are the routes Phase 2 establishes. Before Phase 2, the dashboard was at `/`.
+Before Phase 2 the dashboard was at `/`. Phase 2 moved it to `/app` and made `/` the homepage.
 
-| Address                                     | What it shows                               | Status                         |
-| ------------------------------------------- | ------------------------------------------- | ------------------------------ |
-| `/`                                         | The public homepage                         | Implemented in Phase 2         |
-| `/app`                                      | The application dashboard                   | Implemented, not authenticated |
-| `/login`                                    | States that signing in is not available yet | Placeholder                    |
-| `/register`                                 | States that registration is not open yet    | Placeholder                    |
-| `/contact`, `/vault`, `/account`            | State that the section is not available yet | Placeholder                    |
-| `/cart`, `/shop`                            | Same, kept for old addresses                | Placeholder                    |
-| `/index.html`                               | Redirects to `/app`                         | Redirect                       |
-| `/account.html`, `/cart.html`, `/shop.html` | Redirect to `/account`, `/cart`, `/shop`    | Redirect                       |
-| anything else                               | Not found                                   | Implemented                    |
+| Address                                     | What it shows                                     | Area        | Status                         |
+| ------------------------------------------- | ------------------------------------------------- | ----------- | ------------------------------ |
+| `/`                                         | The public homepage                               | Public site | Implemented                    |
+| `/login`                                    | States that signing in is not available yet       | Public site | Placeholder                    |
+| `/register`                                 | States that registration is not open yet          | Public site | Placeholder                    |
+| `/contact`                                  | States that the section is not available yet      | Public site | Placeholder                    |
+| `/privacy`, `/terms`                        | State that no policy or terms have been published | Public site | Placeholder                    |
+| `/app`                                      | The application dashboard                         | Application | Implemented, not authenticated |
+| `/vault`, `/account`                        | State that the section is not available yet       | Application | Placeholder                    |
+| `/cart`, `/shop`                            | Same, kept for old addresses                      | Application | Placeholder                    |
+| `/index.html`                               | Redirects to `/app`                               |             | Redirect                       |
+| `/account.html`, `/cart.html`, `/shop.html` | Redirect to `/account`, `/cart`, `/shop`          |             | Redirect                       |
+| anything else                               | Not found                                         | Public site | Implemented                    |
+
+The source of truth is `src/sections.ts` (paths, areas, placeholder texts, redirects) and
+`src/AppRoutes.tsx` (the route table).
 
 Rules for routes:
 
@@ -218,8 +255,9 @@ Rules for routes:
 - `/login` and `/register` must stay honest placeholders until real authentication exists. No forms,
   no inputs, no buttons that look like they do something.
 - Do not remove or rename a route without the owner's approval. Old addresses must keep working.
-- A route guard in the browser is not security. Real protection comes from a server that releases
-  data only to authenticated sessions. Until that server exists, nothing is protected.
+- The two areas are about presentation, not access. A route guard in the browser is not security.
+  Real protection comes from a server that releases data only to authenticated sessions. Until that
+  server exists, nothing is protected.
 
 ## 5. Branches and GitHub workflow
 
@@ -535,8 +573,9 @@ What to know:
 - **Read the output. An exit code alone is not enough.** Say how many tests ran and passed.
 - `npm run test:e2e` builds the application itself and serves it on port 4173. That port must be
   free.
-- Some end-to-end tests are skipped on purpose: tests that need a mouse are skipped on the `phone`
-  project, and tests that need touch are skipped on `desktop`. No other test may be skipped.
+- Some end-to-end tests are skipped on purpose: tests that need a mouse or the wide-screen
+  navigation are skipped on the `phone` project, and tests that need touch or the narrow-screen menu
+  are skipped on `desktop`. No other test may be skipped.
 - Every end-to-end test fails if the browser logs an error or a warning (`e2e/fixtures.ts`). That is
   how a Content-Security-Policy violation shows up.
 - If `npm audit signatures` cannot reach its servers from your environment, say so. It also runs in
@@ -614,7 +653,8 @@ found a requirement change that needs the owner's approval, or you have broken s
 
 **The loading screen**
 
-- It lasts three seconds and shows once per page load.
+- It lasts three seconds and shows once per page load, the first time an application page opens.
+  Public pages never wait for it.
 - It is skipped when the visitor asks for reduced motion.
 - It announces itself to assistive technology and has a main landmark and a heading.
 
@@ -734,6 +774,17 @@ improvements, testing in Firefox and Safari, pre-rendering the public pages, rep
 artwork once the owner decides, and content changes to the homepage.
 
 ## Appendix: things that will surprise you
+
+- **A decorative element can swallow taps.** On narrow screens the hero's orbit is pulled up with a
+  negative margin and overlaps the buttons above it. It has `pointer-events: none` for that reason.
+  The end-to-end layout test checks that every hero link is the topmost element under its own centre
+  at every width. Keep both.
+- **The mobile menu closes itself on navigation without any effect.** It records the location key it
+  was opened at and is open only while that key is current (`src/site/SiteHeader.tsx`). Links in it
+  need no `onClick`.
+- **Following a section link is handled in `src/AppRoutes.tsx`,** not by the browser: client-side
+  navigation does not scroll to a fragment. Section headings have `tabIndex={-1}` so they can take
+  focus. jsdom has no scrolling, so the unit-test setup stubs `scrollIntoView` and `scrollTo`.
 
 - **The linter is oxlint, not ESLint.** There is no ESLint configuration. Suppression comments start
   with `oxlint-disable`.
