@@ -1,0 +1,154 @@
+.hero {
+  overflow: hidden;
+  padding-block: clamp(40px, 7vw, 96px) clamp(16px, 3vw, 40px);
+  background: radial-gradient(60% 55% at 78% 42%, rgb(158 4 209 / 0.16), rgb(158 4 209 / 0) 70%);
+}
+
+.layout {
+  display: grid;
+  align-items: center;
+  gap: clamp(32px, 5vw, 64px);
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 12px;
+  border: 1px solid rgb(252 223 3 / 0.3);
+  border-radius: 999px;
+  background-color: rgb(252 223 3 / 0.06);
+  color: var(--color-status-progress);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: currentColor;
+  box-shadow: 0 0 0 3px rgb(252 223 3 / 0.18);
+}
+
+.title {
+  font-size: clamp(2.75rem, 1.4rem + 4.2vw, 4.5rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+}
+
+.line {
+  display: block;
+}
+
+.accent {
+  color: var(--color-brand-text);
+}
+
+.lead {
+  max-width: 34rem;
+  color: var(--color-text-secondary);
+  font-size: clamp(1.0625rem, 0.98rem + 0.4vw, 1.25rem);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.note {
+  color: var(--color-text-tertiary);
+  font-size: 0.875rem;
+}
+
+@media (max-width: 480px) {
+  .actions {
+    align-self: stretch;
+  }
+
+  .actions > * {
+    flex: 1 1 100%;
+  }
+}
+
+.visual {
+  /*
+   * The tilted rings leave empty space above and below; trim it on narrow
+   * screens. The trimmed box then overlaps the text and buttons above it, so
+   * it must let every tap and click through.
+   */
+  margin-block: -20%;
+  pointer-events: none;
+}
+
+/* A short, one-time entrance: the copy rises into place, the visual fades in. */
+@media (prefers-reduced-motion: no-preference) {
+  .copy > * {
+    animation: rise 640ms var(--ease-out) both;
+  }
+
+  .copy > :nth-child(2) {
+    animation-delay: 60ms;
+  }
+
+  .copy > :nth-child(3) {
+    animation-delay: 120ms;
+  }
+
+  .copy > :nth-child(4) {
+    animation-delay: 180ms;
+  }
+
+  .copy > :nth-child(5) {
+    animation-delay: 240ms;
+  }
+
+  .visual {
+    animation: fade 1200ms ease both 150ms;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (min-width: 960px) {
+  .layout {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  }
+
+  .visual {
+    margin-block: 0;
+  }
+}

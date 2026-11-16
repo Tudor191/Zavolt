@@ -1,9 +1,22 @@
-/* Carried over from the original site's loader (`#loader`, `.loader__*`, `.cart__*`). */
+/* The text styles are carried over from the original site's loader (`#loader`, `.loader__*`). */
 
 .loader {
+  /*
+   * The original site set this fluid size on the root element. It is scoped
+   * here so the loader keeps its exact proportions while the rest of the
+   * product uses the visitor's own default text size.
+   */
+  font-size: calc(16px + (20 - 16) * (100vw - 320px) / (1280 - 320));
   text-align: center;
   max-width: 20em;
   width: 100%;
+
+  /*
+   * One sequence, played once. It must end before the loading screen closes
+   * (`SPLASH_DURATION_MS`, three seconds), so the open padlock is the last
+   * thing the visitor sees before the application appears.
+   */
+  --unlock-duration: 2.7s;
 }
 
 .text {
@@ -21,119 +34,181 @@
   width: 100%;
 }
 
-.cart {
+/* The same box the original loader's artwork had. */
+.art {
   display: block;
   margin: 0 auto 1.5em auto;
   width: 8em;
   height: 8em;
+  /* The key starts just outside the drawing. */
+  overflow: visible;
+  /* The soft violet light of the dashboard's rings. */
+  filter: drop-shadow(0 0 0.75em rgb(158 4 209 / 0.35));
 }
 
-.cartLines,
-.cartTop,
-.cartWheel1,
-.cartWheel2,
-.cartWheelStroke {
-  animation: cartLinesFade 2s ease-in-out infinite;
+/*
+ * The artwork.
+ *
+ * Every rule below describes the final frame: the shackle raised, the key
+ * gone. That is also what shows when animations do not run. Each animation
+ * starts at the beginning of the sequence, with the padlock closed, and,
+ * having no `to` keyframe, ends on these values, so the end of the sequence
+ * and the static drawing cannot drift apart. All the animations share one
+ * duration and start together, so the percentages below line up across them:
+ *
+ *    0-12%  the padlock appears, closed
+ *    7-27%  the key comes in from the lower right and lines up with the keyhole
+ *   30-42%  the key slides into the keyhole
+ *   45-55%  the key turns a quarter of a turn (seen from the front, it narrows)
+ *   55-68%  the shackle springs up: the padlock is open
+ *   71-86%  the key turns back and is drawn out of the keyhole
+ *   86-93%  the key moves away and fades
+ *  93-100%  the open padlock rests until the loading screen closes
+ */
+
+.padlock {
+  transform-origin: 64px 89px;
+  animation: padlockAppear var(--unlock-duration) linear both;
 }
 
-.cartLines {
-  stroke: var(--primary);
+.shackle {
+  fill: none;
+  stroke: var(--color-text-secondary);
+  stroke-width: 9;
+  stroke-linecap: round;
+  transform: translateY(-18px);
+  animation: shackleOpen var(--unlock-duration) linear both;
 }
 
-.cartTop {
-  animation-name: cartTopDraw;
+.body {
+  fill: var(--color-brand);
 }
 
-.cartWheel1 {
-  animation-name: cartWheel1Spin;
-  transform: rotate(-0.25turn);
-  transform-origin: 43px 111px;
+.keyhole {
+  fill: var(--color-background);
 }
 
-.cartWheel2 {
-  animation-name: cartWheel2Spin;
-  transform: rotate(0.25turn);
-  transform-origin: 102px 111px;
+.key {
+  opacity: 0;
+  /* The tip of the key, which leads the way into the keyhole. */
+  transform-origin: 49.5px 84px;
+  transform: translateX(30px);
+  animation: keyTravel var(--unlock-duration) linear both;
 }
 
-.cartWheelStroke {
-  animation-name: cartWheelStrokeDraw;
+.keyTurn {
+  /* The key's own axis, through the centre of the keyhole. */
+  transform-origin: 64px 84px;
+  animation: keyQuarterTurn var(--unlock-duration) linear both;
 }
 
-/* The page is always dark, so the track always uses the on-dark colour. */
-.cartTrack {
-  stroke: hsla(var(--hue), 10%, 90%, 0.1);
+.keyBlade {
+  fill: var(--color-text);
 }
 
-@keyframes cartLinesFade {
-  from,
-  to {
+.keyBow {
+  fill: none;
+  stroke: var(--color-text);
+  stroke-width: 5.5;
+}
+
+@keyframes padlockAppear {
+  from {
     opacity: 0;
+    transform: translateY(6px) scale(0.92);
+    animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
   }
 
-  8%,
-  92% {
+  12% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes keyTravel {
+  from,
+  7% {
+    opacity: 0;
+    transform: translate(46px, 28px) rotate(18deg);
+    animation-timing-function: cubic-bezier(0.35, 0, 0.2, 1);
+  }
+
+  16% {
     opacity: 1;
   }
-}
 
-@keyframes cartTopDraw {
-  from {
-    stroke-dashoffset: -338;
+  /* Lined up with the keyhole, the tip just short of it. */
+  27%,
+  30% {
+    transform: translate(22px, 0) rotate(0deg);
+    animation-timing-function: cubic-bezier(0.55, 0, 0.35, 1);
   }
 
-  50% {
-    stroke-dashoffset: 0;
+  /* All the way in. */
+  42%,
+  75% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
   }
 
-  to {
-    stroke-dashoffset: 338;
-  }
-}
-
-@keyframes cartWheel1Spin {
-  from {
-    transform: rotate(-0.25turn);
+  /* Out of the keyhole again. */
+  86% {
+    opacity: 1;
+    transform: translate(22px, 0) rotate(0deg);
+    animation-timing-function: cubic-bezier(0.25, 0.5, 0.5, 1);
   }
 
-  to {
-    transform: rotate(2.75turn);
-  }
-}
-
-@keyframes cartWheel2Spin {
-  from {
-    transform: rotate(0.25turn);
-  }
-
-  to {
-    transform: rotate(3.25turn);
+  93% {
+    opacity: 0;
   }
 }
 
-@keyframes cartWheelStrokeDraw {
+@keyframes keyQuarterTurn {
   from,
-  to {
-    stroke-dashoffset: 81.68;
+  45% {
+    transform: scaleY(1);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
   }
 
-  50% {
-    stroke-dashoffset: 40.84;
+  55%,
+  71% {
+    transform: scaleY(0.3);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+
+  77% {
+    transform: scaleY(1);
   }
 }
 
-/* Without motion, show the cart fully drawn instead of animating it. */
-@media (prefers-reduced-motion: reduce) {
-  .cartLines,
-  .cartTop,
-  .cartWheel1,
-  .cartWheel2,
-  .cartWheelStroke {
-    animation: none;
+@keyframes shackleOpen {
+  from,
+  55% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
   }
 
-  .cartTop,
-  .cartWheelStroke {
-    stroke-dashoffset: 0;
+  63% {
+    transform: translateY(-21px);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+
+  69% {
+    transform: translateY(-17px);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+}
+
+/*
+ * The loading screen is skipped altogether for visitors who ask for reduced
+ * motion. Should it ever show for them, it shows the open padlock, still.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .padlock,
+  .shackle,
+  .key,
+  .keyTurn {
+    animation: none;
   }
 }

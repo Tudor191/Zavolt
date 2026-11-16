@@ -8,19 +8,21 @@ This document describes two different things and keeps them apart:
   Part 2 is a plan, and a plan that touches cryptography must be reviewed by a qualified
   cryptographer before any of it is built.
 
-| Component                                    | Status                                 |
-| -------------------------------------------- | -------------------------------------- |
-| Web application shell, dashboard, navigation | Implemented                            |
-| Section pages (contact, vault, account)      | Placeholder: a message and a link back |
-| Browser hardening                            | Partial: page-level only, see 1.5      |
-| Authentication                               | Planned                                |
-| Zero-knowledge encryption and key management | Planned                                |
-| Backend API                                  | Planned                                |
-| Vault synchronisation                        | Planned                                |
-| Device management                            | Planned                                |
-| Account recovery                             | Planned                                |
-| Desktop application                          | Planned                                |
-| Browser extension                            | Planned                                |
+| Component                                    | Status                                          |
+| -------------------------------------------- | ----------------------------------------------- |
+| Public website: homepage, header, footer     | Implemented                                     |
+| Application shell, dashboard, navigation     | Implemented, not authenticated                  |
+| Sign-in, registration, legal pages           | Placeholder: a statement of what does not exist |
+| Section pages (contact, vault, account)      | Placeholder: a message and a link back          |
+| Browser hardening                            | Partial: page-level only, see 1.5               |
+| Authentication                               | Planned                                         |
+| Zero-knowledge encryption and key management | Planned                                         |
+| Backend API                                  | Planned                                         |
+| Vault synchronisation                        | Planned                                         |
+| Device management                            | Planned                                         |
+| Account recovery                             | Planned                                         |
+| Desktop application                          | Planned                                         |
+| Browser extension                            | Planned                                         |
 
 ---
 
@@ -38,31 +40,58 @@ documents lose everything held in memory on each navigation.
 
 ### 1.2 Structure
 
-| Path                          | Role                                                                                           |
-| ----------------------------- | ---------------------------------------------------------------------------------------------- |
-| `index.html`                  | The shell. Declares the Content-Security-Policy and loads the entry module.                    |
-| `src/main.tsx`                | Entry point. Loads fonts and global styles, refuses to run in a frame, mounts React.           |
-| `src/App.tsx`                 | Wraps the route table in the router and the loading screen.                                    |
-| `src/AppRoutes.tsx`           | The route table. Moves focus to the page heading after each navigation.                        |
-| `src/sections.ts`             | The single list of sections, their routes, icons and accent colours, and the legacy addresses. |
-| `src/components/SplashGate`   | Shows the loader for three seconds once per page load, then reveals the application.           |
-| `src/components/SplashLoader` | The animated loader.                                                                           |
-| `src/components/Icon`         | The three icons, bundled as inline SVG.                                                        |
-| `src/components/MessagePage`  | A page that states one thing and links back to the dashboard.                                  |
-| `src/pages/`                  | Dashboard, section placeholder and not-found pages.                                            |
-| `src/styles/global.css`       | Reset, design tokens and accent colours.                                                       |
+| Path                          | Role                                                                                                   |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `index.html`                  | The shell. Declares the Content-Security-Policy, the favicons and the description.                     |
+| `src/main.tsx`                | Entry point. Loads fonts and global styles, refuses to run in a frame, mounts React.                   |
+| `src/App.tsx`                 | Wraps the route table in the router.                                                                   |
+| `src/AppRoutes.tsx`           | The route table, the loading screen's placement, and focus and scrolling after navigation.             |
+| `src/sections.ts`             | Every route and the area it belongs to, the placeholder texts, and the original site's addresses.      |
+| `src/components/SplashGate`   | Shows the loader before the first application page of a page load, then never again.                   |
+| `src/components/SplashLoader` | The loader's padlock and key: SVG, animated by CSS in its module. Decorative only.                     |
+| `src/components/Icon`         | Twenty Ionicons icons, bundled as inline SVG.                                                          |
+| `src/components/MessagePage`  | A page that states one thing and offers one way back.                                                  |
+| `src/pages/`                  | Homepage, dashboard, section placeholder and not-found pages.                                          |
+| `src/site/`                   | The public website: `SiteLayout`, header, footer, brand mark, buttons, status badges, section headers. |
+| `src/site/home/`              | The homepage sections: hero, product, security, platforms, about, closing call to action.              |
+| `src/styles/global.css`       | Reset, design tokens and accent colours.                                                               |
 
 ### 1.3 Routing
 
-Routing is client-side (React Router, declarative mode).
+Routing is client-side (React Router, declarative mode). Every page belongs to one of two areas,
+recorded in `src/sections.ts`:
 
-| Address                                                    | Page                                      |
-| ---------------------------------------------------------- | ----------------------------------------- |
-| `/`                                                        | Dashboard                                 |
-| `/contact`, `/vault`, `/account`                           | Placeholder for each dashboard section    |
-| `/cart`, `/shop`                                           | Placeholders kept from the original site  |
-| `/index.html`, `/account.html`, `/cart.html`, `/shop.html` | Redirect to the routes that replaced them |
-| anything else                                              | Not found                                 |
+- **Public site.** Rendered inside `SiteLayout`: a skip link, the site header, the page and the
+  footer.
+- **Application.** Full-screen pages with the original look and no site header. The loading screen
+  plays before the first one opened in a page load.
+
+| Address                                     | Page                                     | Area        |
+| ------------------------------------------- | ---------------------------------------- | ----------- |
+| `/`                                         | Homepage                                 | Public site |
+| `/login`, `/register`                       | Placeholders: sign-in and registration   | Public site |
+| `/contact`, `/privacy`, `/terms`            | Placeholders: contact, privacy, terms    | Public site |
+| anything else                               | Not found                                | Public site |
+| `/app`                                      | Dashboard                                | Application |
+| `/vault`, `/account`                        | Placeholders for dashboard sections      | Application |
+| `/cart`, `/shop`                            | Placeholders kept from the original site | Application |
+| `/index.html`                               | Redirects to `/app`                      |             |
+| `/account.html`, `/cart.html`, `/shop.html` | Redirect to `/account`, `/cart`, `/shop` |             |
+
+Contact is public because anyone may need to reach Zavolt; the dashboard still links to it.
+
+**Neither area is protected.** The split is about presentation, not access: until authentication
+and a backend exist, every address is open to every visitor. When authentication is built, the
+application area becomes the natural place for a "signed in" and "unlocked" check, but that check in
+the browser will only ever be a convenience. Protection comes from a server that releases
+ciphertext to authenticated sessions only.
+
+After a navigation, `AppRoutes` does what a full page load would have done:
+
+- a link to `#section` scrolls the section into view and focuses its heading;
+- a link to another page starts it at the top and focuses its `<h1>`;
+- back and forward keep the browser's scroll position;
+- the first page shown keeps the browser's default focus.
 
 Client-side routing is a deliberate choice for a password manager. An unlocked vault key must exist
 only in memory. If moving between pages reloaded the document, the key would be lost each time, and
@@ -71,11 +100,17 @@ the tempting fix, writing it to browser storage, is exactly what must never happ
 ### 1.4 State and styling
 
 There is no global state and no state library. The only state is whether the loading screen has
-finished. Add shared state when a feature needs it, not before.
+played and whether the mobile menu is open. Add shared state when a feature needs it, not before.
 
-Styles are CSS Modules next to their components, plus one global stylesheet. The values were carried
-over from the original stylesheets. Accent colours are selected with a `data-accent` attribute
-instead of inline styles, because the Content-Security-Policy forbids inline styles.
+Styles are CSS Modules next to their components, plus one global stylesheet. The dashboard's values
+were carried over from the original stylesheets. Accent colours are selected with a `data-accent`
+attribute instead of inline styles, because the Content-Security-Policy forbids inline styles.
+
+The public site's design tokens live in `src/styles/global.css`: surfaces, text colours (each with at
+least 6.3:1 contrast on every surface), the brand violet (the dashboard's vault colour) and status
+colours. Text sizes are in `rem`, so they follow the visitor's default text size. The original
+site's viewport-based root font size now applies to the loader only, which keeps its exact
+proportions.
 
 ### 1.5 Browser hardening
 
@@ -101,21 +136,25 @@ serves the files, and no hosting has been chosen. The list is in [SECURITY.md](.
 
 ### 1.6 Testing
 
-| Layer      | Tool                           | Covers                                                                                          |
-| ---------- | ------------------------------ | ----------------------------------------------------------------------------------------------- |
-| Types      | TypeScript, strict             | Application, configuration and tests.                                                           |
-| Lint       | oxlint with type-aware rules   | Correctness, accessibility, and the security rules in SECURITY.md.                              |
-| Unit       | Vitest, Testing Library, jsdom | Loading screen timing, routes, redirects, focus handling, keyboard use.                         |
-| End to end | Playwright with axe-core       | The production build in Chromium at desktop and phone sizes: navigation, policy, accessibility. |
+| Layer      | Tool                           | Covers                                                                                                                |
+| ---------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| Types      | TypeScript, strict             | Application, configuration and tests.                                                                                 |
+| Lint       | oxlint with type-aware rules   | Correctness, accessibility, and the security rules in SECURITY.md.                                                    |
+| Unit       | Vitest, Testing Library, jsdom | Routes and areas, redirects, the loading screen, focus and scrolling, the mobile menu, honesty.                       |
+| End to end | Playwright with axe-core       | The production build in Chromium, desktop and phone: navigation, menu, layout, policy, accessibility, motion, loader. |
 
 ### 1.7 Known limits of the current code
 
-- **The dashboard is not protected.** It is described as the page a signed-in user sees, but nothing
-  checks who the visitor is. No code may assume otherwise until authentication exists.
+- **Nothing is protected.** The dashboard is described as the page a signed-in user sees, but nothing
+  checks who the visitor is, and `/app` is open to everyone. No code may assume otherwise until
+  authentication exists.
 - **The loading screen waits on a timer, not on work.** Nothing is loading during those three
   seconds. When start-up does real work, the gate should wait for that instead.
-- **The loader artwork is a shopping cart and the favicon is a "TDR" monogram.** Both come from the
-  original site and were kept unchanged. Replacing them is a branding decision.
+- **The loader's padlock opening is a picture, not an operation.** Nothing is unlocked, checked or
+  decrypted while it plays, and assistive technology is told only that the application is loading.
+  When a real unlock exists, it must report its own progress, not borrow this animation.
+- **Pages are rendered in the browser.** Search engines and link previews see the bare shell and the
+  description in `index.html`. Pre-rendering the public pages would fix that.
 - **End-to-end tests run in Chromium only.**
 
 ---
@@ -358,7 +397,6 @@ services/api      backend
 | Backend technology and hosting                                             | Hosting also decides how the headers in SECURITY.md are sent.              |
 | Detecting withheld or rolled-back data                                     | See 2.6.                                                                   |
 | Sharing between users                                                      | Needs public keys. The hierarchy in 2.4 leaves room for it.                |
-| The `/cart` and `/shop` routes, the loader artwork, the favicon            | Inherited from the original template.                                      |
 | Licence                                                                    | None chosen.                                                               |
 
 ### 2.14 Suggested order of work

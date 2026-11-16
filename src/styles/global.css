@@ -1,7 +1,7 @@
 /*
  * Global styles: reset, design tokens and document-level layout.
  * Component styles live next to their components as CSS Modules.
- * Values are carried over from the original static site's stylesheet.
+ * The base values are carried over from the original static site's stylesheet.
  */
 
 * {
@@ -12,16 +12,40 @@
 }
 
 :root {
-  --hue: 223;
-  --primary: hsl(var(--hue), 90%, 55%);
-
+  /* Surfaces */
   --color-background: rgb(11, 5, 28);
+  --color-surface: #120a29;
+  --color-surface-raised: #1a1037;
+  --color-border: rgb(255 255 255 / 0.09);
+  --color-border-strong: rgb(255 255 255 / 0.3);
+
+  /*
+   * Text. Every colour here has at least 4.5:1 contrast on every surface
+   * above; the lowest is the tertiary colour at 6.3:1.
+   */
   --color-text: #fff;
+  --color-text-secondary: #c3bcd4;
+  --color-text-tertiary: #9d95b3;
+  /* The dashboard's idle label colour, from the original site. */
   --color-text-muted: #b5b5b5;
+
+  /*
+   * Brand. The violet is the dashboard's vault colour. It is used for fills
+   * behind white text (6.2:1) and for graphics; text uses the lighter tint.
+   */
+  --color-brand: #9e04d1;
+  --color-brand-hover: #b21ee6;
+  --color-brand-text: #cf9dff;
+  --color-focus: #e2c6ff;
+
+  /* Status */
+  --color-status-done: #7ee2a8;
+  --color-status-progress: #fcdf03;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 
   /* The interface has a single, dark theme. */
   color-scheme: dark;
-  font-size: calc(16px + (20 - 16) * (100vw - 320px) / (1280 - 320));
 }
 
 /*
@@ -41,6 +65,10 @@
   --accent: #fcdf03;
 }
 
+html {
+  text-size-adjust: 100%;
+}
+
 body {
   font-family: 'Poppins', sans-serif;
   background-color: var(--color-background);
@@ -55,8 +83,25 @@ body {
   min-height: 100dvh;
 }
 
-/* Headings receive focus programmatically after navigation; they are not interactive. */
-h1:focus {
+::selection {
+  background-color: rgb(158 4 209 / 0.5);
+  color: #fff;
+}
+
+/* A visible focus indicator for every control that does not define its own. */
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+/*
+ * Headings and the main region receive focus programmatically after
+ * navigation, so that the change of page is announced. They are not controls,
+ * so they need no focus indicator.
+ */
+h1:focus,
+h2:focus,
+main:focus {
   outline: none;
 }
 

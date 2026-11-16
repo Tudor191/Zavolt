@@ -4,7 +4,9 @@
 
 Zavolt is in early development. It is not a working password manager yet.
 
-- There is no authentication. Every page, including the dashboard, is served to every visitor.
+- There is no authentication. Every page is served to every visitor, including the application
+  dashboard at `/app`. The split between the public site and the application area is about
+  presentation, not access.
 - There is no encryption, no vault and no backend. Nothing is stored anywhere.
 - Nothing in this repository has been reviewed by an independent security auditor.
 
@@ -89,3 +91,8 @@ implemented.
 8. **Do not loosen a security control to make something pass.** If the Content-Security-Policy, a
    lint rule or a test blocks a change, the change needs rethinking or the exception needs a written
    reason and a review.
+9. **Say only what is true about the product.** The public site, documentation and pull requests
+   must not claim, or imply, that anything planned already exists: no "secure", "encrypted",
+   "audited" or "certified" as a present-tense claim, no invented users, testimonials, prices,
+   screenshots, downloads, certifications or legal text. Every feature on the homepage carries a
+   status label for this reason.
