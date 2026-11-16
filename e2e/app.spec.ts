@@ -2,10 +2,17 @@ import { AxeBuilder } from '@axe-core/playwright';
 import type { Page } from '@playwright/test';
 import { expect, test } from './fixtures.ts';
 
+// The application's dashboard; the public homepage is at `/` (see site.spec.ts).
+const DASHBOARD = '/app';
+
+const BACK_TO_DASHBOARD = { name: 'Back to dashboard', to: DASHBOARD } as const;
+const BACK_TO_HOME = { name: 'Back to home', to: '/' } as const;
+
+// Contact is public, so it leads back to the homepage; the others belong to the application.
 const DASHBOARD_SECTIONS = [
-  { name: 'Contact us', path: '/contact' },
-  { name: 'Vault', path: '/vault' },
-  { name: 'Account', path: '/account' },
+  { name: 'Contact us', path: '/contact', back: BACK_TO_HOME },
+  { name: 'Vault', path: '/vault', back: BACK_TO_DASHBOARD },
+  { name: 'Account', path: '/account', back: BACK_TO_DASHBOARD },
 ] as const;
 
 const ALL_SECTIONS = [
@@ -38,7 +45,7 @@ test.describe('splash', () => {
     // through exactly instead of being raced against.
     await page.clock.install({ time: 0 });
     await page.clock.pauseAt(1000);
-    await page.goto('/');
+    await page.goto(DASHBOARD);
 
     // What assistive technology is told while loading. (The axe scan used for
     // the other pages needs timers, so it cannot run while the clock is frozen.)
@@ -63,7 +70,7 @@ test.describe('splash', () => {
 test.describe('dashboard', () => {
   test('every item leads to its section, and every section leads back', async ({ page }) => {
     for (const section of DASHBOARD_SECTIONS) {
-      await page.goto('/');
+      await page.goto(DASHBOARD);
       await menu(page).getByRole('link', { name: section.name }).click();
 
       await expect(page).toHaveURL(section.path);
@@ -71,16 +78,20 @@ test.describe('dashboard', () => {
       await expect(pageHeading(page, section.name)).toBeFocused();
       await expect(page.getByText('This section is not available yet.')).toBeVisible();
 
-      await page.getByRole('link', { name: 'Back to dashboard' }).click();
+      await page.getByRole('main').getByRole('link', { name: section.back.name }).click();
 
-      await expect(page).toHaveURL('/');
-      await expect(page).toHaveTitle('Dashboard · Zavolt');
-      await expect(pageHeading(page, 'Dashboard')).toBeFocused();
+      await expect(page).toHaveURL(section.back.to);
     }
+
+    // Back from an application section lands on the dashboard, focused.
+    await page.goto('/vault');
+    await page.getByRole('link', { name: 'Back to dashboard' }).click();
+    await expect(page).toHaveTitle('Dashboard · Zavolt');
+    await expect(pageHeading(page, 'Dashboard')).toBeFocused();
   });
 
   test('can be used with the keyboard alone, and shows the focused item', async ({ page }) => {
-    await page.goto('/');
+    await page.goto(DASHBOARD);
     await expect(menu(page)).toBeVisible();
 
     await page.keyboard.press('Tab');
@@ -98,7 +109,7 @@ test.describe('dashboard', () => {
 
   test('with a mouse, a label appears while its ring is hovered', async ({ page, isMobile }) => {
     test.skip(isMobile, 'Hover does not exist on touch screens.');
-    await page.goto('/');
+    await page.goto(DASHBOARD);
     const vault = menu(page).getByRole('link', { name: 'Vault' });
     const label = vault.getByText('Vault');
 
@@ -112,7 +123,7 @@ test.describe('dashboard', () => {
     isMobile,
   }) => {
     test.skip(!isMobile, 'Covers devices without hover.');
-    await page.goto('/');
+    await page.goto(DASHBOARD);
     expect(await page.evaluate(() => window.matchMedia('(hover: none)').matches)).toBe(true);
 
     for (const section of DASHBOARD_SECTIONS) {
@@ -125,7 +136,7 @@ test.describe('dashboard', () => {
   });
 
   test('fits every screen width without sideways scrolling', async ({ page }) => {
-    await page.goto('/');
+    await page.goto(DASHBOARD);
     await expect(menu(page)).toBeVisible();
     const links = await menu(page).getByRole('link').all();
     expect(links).toHaveLength(3);
@@ -160,7 +171,7 @@ test.describe('addresses', () => {
 
   test('addresses of the original static site still work', async ({ page }) => {
     const legacyAddresses = [
-      { from: '/index.html', to: '/', heading: 'Dashboard' },
+      { from: '/index.html', to: DASHBOARD, heading: 'Dashboard' },
       { from: '/account.html', to: '/account', heading: 'Account' },
       { from: '/cart.html', to: '/cart', heading: 'Cart' },
       { from: '/shop.html', to: '/shop', heading: 'Shop' },
@@ -176,8 +187,9 @@ test.describe('addresses', () => {
     await page.goto('/no-such-page');
 
     await expect(pageHeading(page, 'Page not found')).toBeVisible();
-    await page.getByRole('link', { name: 'Back to dashboard' }).click();
+    await page.getByRole('link', { name: 'Back to home' }).click();
     await expect(page).toHaveURL('/');
+    await expect(pageHeading(page, 'Your passwords. Your control.')).toBeVisible();
   });
 
   test('the logo is still served from its original address', async ({ request }) => {
@@ -218,7 +230,7 @@ test.describe('security', () => {
 
   test('the browser enforces the policy against script injection', async ({ page, problems }) => {
     await page.goto('/');
-    await expect(menu(page)).toBeVisible();
+    await expect(pageHeading(page, 'Your passwords. Your control.')).toBeVisible();
 
     // Each attempt would set a marker on <body> if its injected code ran.
     //
@@ -296,7 +308,11 @@ test.describe('security', () => {
     const origins = new Set<string>();
     page.on('request', (request) => origins.add(new URL(request.url()).origin));
 
+    // The public site and the application, including fonts, icons and navigation.
     await page.goto('/');
+    await page.getByRole('link', { name: 'Explore security' }).first().click();
+    await expect(page.getByRole('heading', { level: 2, name: /only you can read/ })).toBeFocused();
+    await page.goto(DASHBOARD);
     await menu(page).getByRole('link', { name: 'Vault' }).click();
     await expect(pageHeading(page, 'Vault')).toBeVisible();
 
@@ -305,7 +321,18 @@ test.describe('security', () => {
 });
 
 test.describe('accessibility', () => {
-  for (const path of ['/', '/vault', '/cart', '/no-such-page']) {
+  for (const path of [
+    '/',
+    DASHBOARD,
+    '/vault',
+    '/cart',
+    '/contact',
+    '/login',
+    '/register',
+    '/privacy',
+    '/terms',
+    '/no-such-page',
+  ]) {
     test(`${path} has no detectable accessibility violations`, async ({ page }) => {
       await page.goto(path);
       await expect(page.locator('main h1')).toBeAttached();
