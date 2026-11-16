@@ -274,7 +274,92 @@ test.describe('mobile menu', () => {
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations.map((violation) => `${violation.id}: ${violation.help}`)).toEqual([]);
   });
+
+  // The tests below follow, through the menu, the links that wide screens test
+  // in the "navigation" group above.
+
+  test('the Product and About links scroll to their sections and close the menu', async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(!isMobile, 'The menu button only exists on narrow screens.');
+    await page.goto('/');
+
+    // Security is followed by the touch and keyboard tests above.
+    for (const section of SECTIONS.filter((candidate) => candidate.link !== 'Security')) {
+      await openMobileMenu(page);
+      await mainNavigation(page).getByRole('link', { name: section.link }).tap();
+
+      await expect(page).toHaveURL(`/${section.hash}`);
+      const heading = page.getByRole('heading', { level: 2, name: section.heading });
+      await expect(heading).toBeFocused();
+      await expect(heading).toBeInViewport();
+      await expectMobileMenuClosed(page);
+    }
+  });
+
+  test('sign-in leads to a page that states its limits, and closes the menu', async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(!isMobile, 'The menu button only exists on narrow screens.');
+    await page.goto('/');
+
+    await openMobileMenu(page);
+    await mainNavigation(page).getByRole('link', { name: 'Sign in' }).tap();
+
+    await expect(page).toHaveURL('/login');
+    await expect(pageHeading(page, 'Sign in')).toBeFocused();
+    await expect(page.getByText(/Signing in is not available yet/)).toBeVisible();
+    await expectMobileMenuClosed(page);
+  });
+
+  test('the Zavolt home link leads to the homepage, even with the menu open', async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(!isMobile, 'The menu button only exists on narrow screens.');
+    await page.goto('/login');
+
+    await openMobileMenu(page);
+    await page.getByRole('link', { name: 'Zavolt home' }).first().tap();
+
+    await expect(page).toHaveURL('/');
+    await expect(pageHeading(page, HERO_HEADING)).toBeFocused();
+    await expectMobileMenuClosed(page);
+  });
+
+  test('a section link followed from another page opens the homepage at that section', async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(!isMobile, 'The menu button only exists on narrow screens.');
+    await page.goto('/login');
+
+    await openMobileMenu(page);
+    await mainNavigation(page).getByRole('link', { name: 'Security' }).tap();
+
+    await expect(page).toHaveURL('/#security');
+    const heading = page.getByRole('heading', { level: 2, name: SECTIONS[1].heading });
+    await expect(heading).toBeFocused();
+    await expect(heading).toBeInViewport();
+    await expectMobileMenuClosed(page);
+  });
 });
+
+// Helpers for the narrow-screen menu tests above.
+
+/** Opens the narrow-screen menu by touch. */
+async function openMobileMenu(page: Page): Promise<void> {
+  await menuButton(page).tap();
+  await expect(mainNavigation(page)).toBeVisible();
+}
+
+/** The narrow-screen menu is closed: its button says so, and the navigation is hidden. */
+async function expectMobileMenuClosed(page: Page): Promise<void> {
+  await expect(menuButton(page)).toHaveAttribute('aria-expanded', 'false');
+  await expect(mainNavigation(page)).toBeHidden();
+}
 
 test.describe('layout', () => {
   test('the homepage fits every required width without sideways scrolling', async ({ page }) => {
