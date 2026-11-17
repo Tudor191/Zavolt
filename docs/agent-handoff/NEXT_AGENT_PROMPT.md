@@ -17,23 +17,33 @@ differ, and correct this document as part of your work.
 
 These come from the project owner. They apply to every task, including small ones.
 
-1. **Read the existing documentation before changing code.** The list is in section 11.
+1. **Read the existing documentation before you propose or make any change.** The list is in
+   section 11. Architecture and security proposals start from `docs/ARCHITECTURE.md`, `SECURITY.md`
+   and `docs/DECISIONS.md`.
 2. **Never invent project history, and never claim that something works unless you ran it and saw it
    work.** If you did not run a check, say "not run" and say why.
-3. **Never implement a custom cryptographic algorithm or protocol.** Do not write any cryptographic
-   code at all until there is a written design that a qualified cryptographer has reviewed and the
-   owner has approved.
+3. **Never implement a custom cryptographic algorithm or protocol.** Do not write cryptographic code
+   until the design has been through the internal review in `SECURITY.md` (Cryptographic design
+   review) and the owner has explicitly approved that implementation stage. Never invent a
+   construction, and never implement one without documented justification.
 4. **Never weaken a security control to make a test, a build or a feature pass.** That includes the
    Content-Security-Policy, Trusted Types, lint rules, tests and CI jobs.
 5. **Never put secrets, keys or decrypted vault contents in browser storage.** That means
    `localStorage`, `sessionStorage`, IndexedDB and cookies that script can read.
-6. **Never commit directly to `main`.**
+6. **Never begin implementation without the owner's explicit approval, and never do it on
+   `main`.** Each implementation stage needs that approval before it starts; approving
+   documentation or a plan is not approval to implement it. Code is written only on a dedicated
+   feature branch and reaches `main` only through a pull request. Only documentation-only changes
+   the owner asked for are committed directly to `main` (section 5.1).
 7. **Never force-push**, to any branch.
 8. **Never merge a pull request unless the owner has explicitly told you to merge that specific pull
    request.** Green checks are not permission.
 9. **Run the complete verification suite (section 12) before you open a pull request.**
-10. **Ask for human or specialist review of every cryptographic decision.** You do not get to settle
-    one yourself, however confident you are.
+10. **Put every cryptographic decision through the documented internal review, and keep the
+    external audit.** ChatGPT and Claude carry out that review (`SECURITY.md`); only the owner
+    decides, and you never settle one yourself, however confident you are. The review is not
+    independent: never describe it as an audit or as a specialist's review. The independent
+    external security audit before any public release stays mandatory.
 
 If a task seems to require breaking one of these, stop and ask the owner (section 17).
 
@@ -63,8 +73,9 @@ nobody can sign in. Never write, in code, documentation, a pull request or page 
 
 ## 2. State snapshot
 
-_Last refreshed: 16 November 2026, after pull request 2 (Phase 2) was merged into `main`. Whoever
-finishes a phase must refresh this section._
+_Last refreshed: 17 November 2026, after the owner's decisions on how work is done were recorded
+directly on `main` (section 2.1). Whoever finishes a phase, or changes how work is done, must
+refresh this section._
 
 Verify every line below yourself (section 11) before relying on it.
 
@@ -83,20 +94,34 @@ squash-merged on 16 November 2026 from `feature/public-landing-page` at `e190de5
 Phase 2 is complete. No later phase has been started: the owner decides what comes next
 (section 18).
 
+Pull request 3 (<https://github.com/Tudor191/Zavolt/pull/3>), which refreshed this file after
+Phase 2, was squash-merged as `dbadf4e`.
+
+On 17 November 2026 the owner approved new rules for how work is done (`docs/DECISIONS.md`):
+documentation-only changes go directly to `main`; code goes through feature branches and pull
+requests; every implementation stage and every merge needs the owner's explicit approval; and the
+cryptographic design is reviewed internally by ChatGPT and Claude instead of by a cryptography
+specialist, while the independent audit before any public release stays mandatory. The
+documentation was updated in one commit directly on `main`. That was not the start of Phase 3.
+
 ### 2.2 Branches
 
 | Branch                                           | What it is                                                         | Rule                         |
 | ------------------------------------------------ | ------------------------------------------------------------------ | ---------------------------- |
-| `main`                                           | The integration branch. Every pull request targets it.             | Never commit to it directly. |
+| `main`                                           | The integration branch. Every pull request targets it.             | Code only via pull requests. |
 | `conversie-html-to-typescript`                   | The original branch, holding the original static site (9 commits). | Never change or delete it.   |
-| `claude/zavolt-html-typescript-migration-w69ttq` | Phase 1 (pull request 1, merged), then this handoff refresh.       | Leave it. Do not delete it.  |
+| `claude/zavolt-html-typescript-migration-w69ttq` | Phase 1, then pull request 3 (the Phase 2 handoff). Both merged.   | Leave it. Do not delete it.  |
 | `feature/public-landing-page`                    | The Phase 2 implementation branch (pull request 2, merged).        | Leave it. Do not delete it.  |
 
-When this was last refreshed, `main` was at `7ab28f3`, `conversie-html-to-typescript` was untouched at
-`cbc08b4`, and **the repository's default branch was `main`**. The owner switched it by hand after
-Phase 1: the agent session of that phase could not, because its GitHub tools had no
-repository-settings operation (section 5.3). Check the current default with
-`git ls-remote --symref origin HEAD` before you rely on it.
+Documentation-only changes that the owner asks for are committed directly to `main` (section 5.1).
+Code never is.
+
+When this was last refreshed, `main` was at `dbadf4e` and the documentation commit carrying this
+text was added directly on top of it. `conversie-html-to-typescript` was untouched at `cbc08b4`, and
+**the repository's default branch was `main`**. The owner switched it by hand after Phase 1: the
+agent session of that phase could not, because its GitHub tools had no repository-settings
+operation (section 5.3). Check the current default with `git ls-remote --symref origin HEAD` before
+you rely on it.
 
 `main` contains everything described below.
 
@@ -147,8 +172,12 @@ None of the following has been started. Do not describe any of it as existing.
 - The homepage states four security commitments: a specialist review of the encryption design
   before it is built, an independent audit before any public release, no advertising or tracking
   code, and no recovery design that lets Zavolt decrypt a vault. The owner confirmed them on
-  16 November 2026 (`docs/DECISIONS.md`). They are commitments about the future. None of them is a
-  feature, and nothing may describe them as done.
+  16 November 2026 (`docs/DECISIONS.md`). On 17 November 2026 the owner replaced the first with the
+  internal review in `SECURITY.md`, **but the homepage still states it**, in
+  `src/site/home/AboutSection.tsx` and `src/site/home/SecuritySection.tsx`. Changing that text is
+  a code change: it needs the owner's approval, a feature branch and a pull request. The other
+  three commitments stand. They are commitments about the future. None of them is a feature, and
+  nothing may describe them as done.
 - Browser checks run in Chromium only. Firefox and Safari have not been tested.
 - The development server does not apply the Content-Security-Policy (section 6.2).
 - Pages are rendered in the browser. Nothing is pre-rendered, so search engines and link previews
@@ -273,15 +302,39 @@ Rules for routes:
 
 ### 5.1 The workflow
 
-1. Start from an up-to-date `main`.
-2. Create a new branch for your task. Never reuse someone else's branch unless told to.
+Work follows one of two paths. The owner set these rules on 17 November 2026
+(`docs/DECISIONS.md`).
+
+**Documentation-only changes** touch nothing but Markdown documentation: `README.md`, `SECURITY.md`
+and files under `docs/`. Text shown on the website lives in source files, so changing it is a code
+change.
+
+1. Make them only when the owner has asked for them.
+2. Work directly on an up-to-date `main`. No feature branch is needed.
+3. Preserve the project's history and decisions. Add rows to `docs/DECISIONS.md`; never rewrite or
+   delete old ones.
+4. Run `npm run format:check`: continuous integration checks the formatting of Markdown too.
+5. Keep the diff clear. Before committing, show the owner the changed files and a summary of the
+   diff. Then make one descriptive commit and push it to `main`.
+6. If pushing to `main` is refused, report the exact refusal. Do not open a branch or a pull request
+   as a workaround unless the owner says so.
+
+Approving documentation is never approval to implement what it describes.
+
+**Code and implementation work** is everything else: source code, tests, configuration, continuous
+integration, dependencies and website text.
+
+1. Start only when the owner has explicitly approved this implementation stage.
+2. Start from an up-to-date `main` and create a dedicated feature branch for the task. Never reuse
+   someone else's branch unless told to. Never write code directly on `main`.
 3. Make small commits that each do one thing, with messages that say what and why.
 4. Run the complete verification suite (section 12).
 5. Push your branch and open a pull request that targets `main`.
 6. Wait for continuous integration. Fix every failure by fixing its cause.
-7. Leave the pull request open for the owner. Do not merge it.
+7. Leave the pull request open for the owner. Never merge it without the owner's explicit approval
+   for that pull request.
 
-Section 13 gives the exact commands.
+Section 13 gives the exact commands for both paths.
 
 ### 5.2 Continuous integration
 
@@ -392,8 +445,10 @@ npm install --before="$(date -u -d '7 days ago' +%F)" <package>
 ## 7. Proposed zero-knowledge architecture
 
 > **This is a proposal. It is not approved, it is not final, and none of it is implemented.**
-> Do not implement any part of it. It must first be written out in full, reviewed by a qualified
-> cryptographer, and approved by the owner. Until then, treat every detail below as open to change.
+> Do not implement any part of it. It must first be written out in full, go through the internal
+> review in `SECURITY.md`, and be approved by the owner, one implementation stage at a time. Until
+> then, treat every detail below as open to change. The internal review's own provisional
+> recommendations are in `docs/ARCHITECTURE.md`, section 2.16. They are not approved either.
 
 The full text is in `docs/ARCHITECTURE.md`, Part 2. In brief:
 
@@ -450,8 +505,10 @@ Consequences you must respect:
 
 - **Signed in does not mean unlocked.** A device can hold a valid session and still have a locked
   vault. Locking discards the keys from memory and leaves the session alone.
-- **Unlocked does not need the server.** Unlocking derives keys from the master password and unwraps
-  the vault key. With a local encrypted copy, that can work offline.
+- **Unlocked does not need the server** in the design above: unlocking derives keys from the master
+  password and unwraps the vault key, and with a local encrypted copy that can work offline. The
+  internal review's provisional recommendation differs (online-only unlocking at first,
+  `docs/ARCHITECTURE.md` section 2.16). The owner has not decided.
 - **A session token never decrypts anything.** Stealing one must yield ciphertext at most.
 - **Multi-factor authentication protects authentication.** It does not replace the master password
   for decryption.
@@ -497,20 +554,24 @@ instead of creating a second repository. Do not do this conversion until the own
 ## 10. Decisions that are still open
 
 **None of these is settled.** Do not pick one and build on it. If your task depends on one, stop and
-ask the owner. For the cryptographic ones, a cryptographer must be involved.
+ask the owner. The cryptographic ones go through the internal review in `SECURITY.md`.
+`docs/ARCHITECTURE.md` section 2.16 has that review's provisional recommendations; none is approved.
 
 | Decision                                        | The options and what is known                                                                                                                                                                                                                                                                                                                           | What is needed to decide                                             |
 | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| **OPAQUE or a derived authentication key**      | A derived key is simple: the client derives it and presents it over TLS, and the server stores a slow salted hash. But the server sees a password-equivalent at every sign-in. OPAQUE (RFC 9807) never shows the server anything password-equivalent and resists pre-computation, but is more complex and depends on a vetted library for every client. | Cryptographic review. A survey of maintained libraries per platform. |
-| **Key derivation parameters**                   | Argon2id is the named direction. The documented starting floor is RFC 9106's memory-constrained recommendation: 64 MiB, 3 passes, 4 lanes. Real values must come from measurements on the slowest supported devices and in browsers. Also open: whether a second, device-held secret is mixed in.                                                       | Benchmarks on real devices. Cryptographic review.                    |
-| **Encryption algorithm and nonce strategy**     | AES-256-GCM is built into browsers but has a 96-bit nonce, so random nonces are only safe when each key encrypts very few messages. XChaCha20-Poly1305 has a 192-bit nonce but needs a library. Open: which one or both, random or counter nonces, what associated data binds each ciphertext to its context, and whether key commitment is needed.     | Cryptographic review. Depends on the client core decision.           |
-| **Recovery design**                             | The proposal is a random recovery key shown once, under which the vault key is wrapped a second time. Open: whether to offer recovery at all, the key's format, what happens after it is used, how recovery is rate-limited and announced, and how phishing is resisted. Recovery must never give anyone else a way to decrypt.                         | Owner's product decision, then cryptographic review.                 |
-| **Server rollback and withheld-data detection** | Not designed. A dishonest server could serve old data or omit items. Candidate ideas include a client-authenticated record of vault state and cross-checking between a user's devices. Nothing has been chosen or analysed.                                                                                                                             | Design work and cryptographic review.                                |
+| **OPAQUE or a derived authentication key**      | A derived key is simple: the client derives it and presents it over TLS, and the server stores a slow salted hash. But the server sees a password-equivalent at every sign-in. OPAQUE (RFC 9807) never shows the server anything password-equivalent and resists pre-computation, but is more complex and depends on a vetted library for every client. | Internal review. A survey of maintained libraries for each platform. |
+| **Key derivation parameters**                   | Argon2id is the named direction. The proposed starting floor is RFC 9106's memory-constrained recommendation: 64 MiB, 3 passes, 4 lanes. Real values must come from measurements on the slowest supported devices and in browsers. Also open: whether a second, device-held secret is mixed in.                                                         | Benchmarks on real devices. Internal review.                         |
+| **Encryption algorithm and nonce strategy**     | AES-256-GCM is built into browsers but has a 96-bit nonce, so random nonces are only safe when each key encrypts very few messages. XChaCha20-Poly1305 has a 192-bit nonce but needs a library. Open: which one or both, random or counter nonces, what associated data binds each ciphertext to its context, and whether key commitment is needed.     | Internal review. Depends on the client core decision.                |
+| **Recovery design**                             | The proposal is a random recovery key shown once, under which the vault key is wrapped a second time. Open: whether to offer recovery at all, the key's format, what happens after it is used, how recovery is rate-limited and announced, and how phishing is resisted. Recovery must never give anyone else a way to decrypt.                         | Owner's product decision, then internal review.                      |
+| **Server rollback and withheld-data detection** | Not designed. A dishonest server could serve old data or omit items. Candidate ideas include a client-authenticated record of vault state and cross-checking between a user's devices. Nothing has been chosen or analysed.                                                                                                                             | Design work and internal review.                                     |
 | **Desktop application technology**              | Not chosen. The trade-off is a smaller attack surface against maturity of tooling, plus signed updates and access to the operating system's credential store.                                                                                                                                                                                           | Owner's decision after a short written comparison.                   |
 | **Backend technology and hosting**              | Not chosen. Hosting also decides how the response headers in `SECURITY.md` are sent, whether the API shares the application's origin, and where rate limiting lives.                                                                                                                                                                                    | Owner's decision.                                                    |
 
 Other open decisions: one shared client core in a compiled language or separate libraries per
-platform; sharing between users; the licence; the privacy policy and terms; a contact channel.
+platform; sharing between users; the licence; the privacy policy and terms; a contact channel. The
+internal review added more: online-only or offline unlocking, the browser extension's key storage,
+the supported browsers and platforms, and how many old versions of an item are kept
+(`docs/DECISIONS.md`).
 
 Decided on 16 November 2026, and no longer open: `/cart` and `/shop` stay, and the loader is a
 padlock and key (`docs/DECISIONS.md`).
@@ -518,6 +579,10 @@ padlock and key (`docs/DECISIONS.md`).
 ## 11. Before you change anything
 
 Do these in order, every time you start work.
+
+For a documentation-only change (section 5.1), the full verification suite in step 6 is not
+needed. Run `npm run format:check` before you commit instead; it needs the dependencies from steps 4
+and 5.
 
 1. See where you are and what exists on GitHub:
 
@@ -600,12 +665,16 @@ requirement it encodes has changed, with the owner's approval.
 
 ## 13. Branches and pull requests, step by step
 
+This is the path for code and implementation work. Start it only when the owner has explicitly
+approved the implementation stage (section 5.1). Documentation-only changes take the shorter path
+at the end of this section.
+
 ```bash
 git fetch origin
 git switch -c <type>/<short-description> origin/main
 ```
 
-Use a type such as `feature`, `fix`, `docs` or `chore`, for example `feature/vault-list`.
+Use a type such as `feature`, `fix` or `chore`, for example `feature/vault-list`.
 
 Work, then for each logical step:
 
@@ -644,7 +713,29 @@ Then:
 - Wait for all three continuous-integration jobs. Read the logs of any that fail and fix the cause.
 - If `main` has moved and conflicts with your branch, merge `main` into your branch. Do not rebase a
   branch you have already pushed, because that needs a force-push.
-- **Do not merge.** Leave the pull request open and tell the owner it is ready.
+- **Do not merge.** Leave the pull request open and tell the owner it is ready. Merge only when the
+  owner explicitly approves that pull request.
+
+For a documentation-only change there is no branch and no pull request. Start from an up-to-date
+`main`:
+
+```bash
+git fetch origin
+git switch main
+git merge --ff-only origin/main
+```
+
+Make the change, run `npm run format:check`, and look at `git status` and `git diff --stat`. Show
+the owner the changed files and the diff summary, then:
+
+```bash
+git add <the documentation files>
+git commit
+git push origin main
+```
+
+If the push is refused, report the exact refusal and stop. Do not switch to a branch or a pull
+request unless the owner says so.
 
 Never delete a branch, yours or anyone else's, unless the owner asks.
 
@@ -713,7 +804,10 @@ Working habits that prevent breakage:
 
 **Decisions.** Add a row to `docs/DECISIONS.md`: the date, what was decided, who decided it, and why.
 Only the owner decides product and security questions. If you chose a default yourself because
-nobody had decided, say that it is your default and that it is open to change.
+nobody had decided, say that it is your default and that it is open to change. Security-sensitive
+decisions, including any that come out of the internal review in `SECURITY.md`, are recorded the
+same way once the owner has made them. A provisional recommendation is not a decision: never add one
+to the Decided table.
 
 **State of the product.** When something becomes implemented, update the status table in
 `README.md`, Part 1 of `docs/ARCHITECTURE.md`, and `SECURITY.md` if it touches security. Move text
@@ -734,10 +828,16 @@ not verify, what is still open, and what you recommend next. Say plainly when so
 
 ## 16. What you must never do
 
-- Never commit to `main`, force-push, rewrite published history, or delete a branch.
+- Never commit code to `main`, force-push, rewrite published history, or delete a branch. Only
+  documentation-only changes the owner asked for go directly to `main` (section 5.1).
 - Never merge a pull request without the owner's explicit instruction for that pull request.
 - Never change repository settings that you were not asked to change.
-- Never implement cryptography without an approved, reviewed design. Never invent an algorithm.
+- Never implement cryptography before the internal review in `SECURITY.md` and the owner's explicit
+  approval of that implementation stage. Never invent an algorithm.
+- Never treat the owner's approval of documentation or a plan as approval to implement it.
+- Never describe the internal, AI-assisted review as independent, as an audit or as a specialist's
+  review, and never treat it as a substitute for the independent external audit before any public
+  release.
 - Never treat section 7 or `docs/ARCHITECTURE.md` Part 2 as an approved specification.
 - Never fake authentication, registration, a vault, or any other feature. No pretend sign-in form, no
   "demo" account, no data kept in memory or storage that imitates a vault.
@@ -764,6 +864,7 @@ Stop and ask before you:
 - make any decision listed in section 10;
 - change the Content-Security-Policy or any other security control;
 - write or change anything cryptographic;
+- start any implementation stage, even one that a document already describes;
 - remove or rename a route, or remove a page;
 - delete or overwrite anything you did not create in this task;
 - add a dependency that ships to users, or a large development dependency;
@@ -784,7 +885,7 @@ the owner asks for.
 | 1    | Foundation: typed application, tests, CI, documents (Phase 1)                               | Done. See section 2.                                               |
 | 2    | Public homepage and route separation (Phase 2)                                              | Done. See section 2.                                               |
 | 3    | Choose hosting; send the response headers in `SECURITY.md`                                  | Several protections cannot exist until something serves the files. |
-| 4    | Write the threat model and the full protocol; have a cryptographer review them              | Nothing cryptographic may be built before this.                    |
+| 4    | Write the threat model and the full protocol; complete the internal review                  | Nothing cryptographic may be built before this.                    |
 | 5    | Build the client core as a package with no user interface, tested against published vectors | One audited implementation, shared by every client.                |
 | 6    | Build the backend: accounts, authentication, encrypted storage, rate limiting               | Needs the decisions in section 10.                                 |
 | 7    | Add registration, sign-in, unlocking and the vault to the web application                   | Needs steps 4 to 6.                                                |
@@ -792,13 +893,17 @@ the owner asks for.
 | 9    | Build the browser extension, then the desktop application                                   |                                                                    |
 | 10   | Commission an independent security audit before any public release                          | No security claim may be made before this.                         |
 
-Steps 4 and 10 are also owner commitments (`docs/DECISIONS.md`): the encryption design is reviewed
-by specialists before any of it is built, and an independent audit takes place before any public
-release.
+Step 10 is an owner commitment (`docs/DECISIONS.md`): an independent external security audit takes
+place before any public release. Step 4 was also a commitment, to a review by specialists; on
+17 November 2026 the owner replaced that with the internal review in `SECURITY.md`, which does not
+replace step 10. Step 4's documents are documentation-only work. Every step that changes code or
+configuration is an implementation stage: it starts only when the owner explicitly approves it, on
+a feature branch.
 
 Smaller things that are safe to do when asked, and need no open decision: accessibility
 improvements, testing in Firefox and Safari, pre-rendering the public pages, and content changes to
-the homepage.
+the homepage. Each of them changes code, so each takes the code path in section 5.1: the owner's
+approval, a feature branch and a pull request.
 
 ## Appendix: things that will surprise you
 

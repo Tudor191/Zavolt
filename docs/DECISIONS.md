@@ -44,6 +44,14 @@ one that says so.
 | 2026-11-16 | The loader's shopping cart is replaced by an animated padlock and key.                                              | Owner         | The cart came from the template. The animation is a picture: it does not stand for any real unlocking, checking or decryption.                                                                         |
 | 2026-11-16 | The padlock and key are original SVG in the brand colours, animated by one CSS sequence of 2.7 seconds.             | Agent default | The owner set the sequence and its length, 2.6 to 2.8 seconds. The key's quarter turn shows as the key narrowing edge-on. The open padlock is the resting state, shown where nothing animates.         |
 | 2026-11-16 | Merge pull request 2 with a squash merge.                                                                           | Owner         | The owner approved the merge after the final pre-merge review. It is commit `7ab28f3` on `main`.                                                                                                       |
+| 2026-11-17 | Documentation-only changes are made directly on `main`, with no feature branch, and reviewed through a clear diff.  | Owner         | Each change must preserve the project's history and recorded decisions: earlier rows here are never rewritten. Website text lives in source files, so it is code. See the handoff, section 5.1.        |
+| 2026-11-17 | Code and implementation work happens only on a dedicated feature branch, never directly on `main`.                  | Owner         | Code reaches `main` only through a pull request, after continuous integration has run. See the handoff, sections 5.1 and 13.                                                                           |
+| 2026-11-17 | Each technical implementation stage starts only after the owner's explicit approval.                                | Owner         | Approving documentation, a plan or a proposal is not approval to implement it.                                                                                                                         |
+| 2026-11-17 | Pull requests and merges need the owner's explicit approval.                                                        | Owner         | Green checks are not permission. An agent never merges on its own initiative.                                                                                                                          |
+| 2026-11-17 | The cryptographic design is reviewed internally by ChatGPT and Claude, through the process in `SECURITY.md`.        | Owner         | No cryptography specialist is available. Replaces the requirement for a cryptographer's or specialists' review before implementation (rows of 2026-11-15 and 2026-11-16, kept as history).             |
+| 2026-11-17 | The internal review is AI-assisted. It is not an independent review, a specialist review or a certification.        | Owner         | ChatGPT and Claude are not independent security auditors or qualified cryptography specialists. Nothing may present their review as either.                                                            |
+| 2026-11-17 | Commitment kept: an independent external security audit takes place before any public release.                      | Owner         | The internal review does not replace or weaken it. Confirms the commitment of 2026-11-16.                                                                                                              |
+| 2026-11-17 | Security-sensitive decisions, including those from the internal review, are recorded here once the owner decides.   | Owner         | Provisional recommendations are not decisions and are not recorded as decided. They are listed in `ARCHITECTURE.md`, section 2.16.                                                                     |
 
 ## Statements on the public homepage that the owner was asked to confirm
 
@@ -59,18 +67,30 @@ them:
 - Zavolt is designed without advertising or tracking code.
 - If account recovery is offered, it will never give Zavolt a way to decrypt a vault.
 
+**Revised on 17 November 2026.** The owner replaced the first statement's specialist review with the
+internal review in `SECURITY.md` (table above). The homepage still says the design will be reviewed
+by specialists. Changing that text is a code change that needs the owner's approval (open table
+below). The other three statements stand.
+
 ## Open
 
-These are not decided. Do not build on any of them until the owner decides. For the cryptographic
-ones a cryptographer must be involved. The handoff (`agent-handoff/NEXT_AGENT_PROMPT.md`, section 10) describes the options.
+These are not decided. Do not build on any of them until the owner decides. The cryptographic ones
+go through the internal review in `SECURITY.md` (Cryptographic design review). The handoff
+(`agent-handoff/NEXT_AGENT_PROMPT.md`, section 10) describes the options, and `ARCHITECTURE.md`
+section 2.16 lists the internal review's provisional recommendations, none of them approved.
 
 | Decision                                                           | Needs                                                    |
 | ------------------------------------------------------------------ | -------------------------------------------------------- |
-| OPAQUE or a derived authentication key                             | Cryptographic review; a survey of libraries per platform |
-| Key derivation parameters, and whether a device secret is mixed in | Benchmarks on real devices; cryptographic review         |
-| Encryption algorithm, nonce strategy and associated data           | Cryptographic review                                     |
-| Account recovery design                                            | Owner's product decision, then cryptographic review      |
-| Detecting server rollback and withheld data                        | Design work and cryptographic review                     |
+| OPAQUE or a derived authentication key                             | Internal review; a survey of libraries for each platform |
+| Key derivation parameters, and whether a device secret is mixed in | Benchmarks on real devices; internal review              |
+| Encryption algorithm, nonce strategy and associated data           | Internal review                                          |
+| Account recovery design                                            | Owner's product decision, then internal review           |
+| Detecting server rollback and withheld data                        | Design work and internal review                          |
+| Online-only or offline vault unlocking                             | Owner's product decision, then internal review           |
+| Browser extension key storage (`SECURITY.md` rule 4)               | Owner's decision on an exception to rule 4               |
+| Supported browsers and platforms; sign-in time budget              | Owner's decision; benchmarks on real devices             |
+| How many old versions of an item are kept                          | Owner's product decision                                 |
+| Homepage wording that promises a specialist review                 | Owner's approval of a code change on a feature branch    |
 | Desktop application technology                                     | Owner, after a written comparison                        |
 | Backend technology and hosting                                     | Owner                                                    |
 | Licence                                                            | Owner                                                    |

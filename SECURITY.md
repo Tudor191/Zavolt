@@ -9,6 +9,9 @@ Zavolt is in early development. It is not a working password manager yet.
   presentation, not access.
 - There is no encryption, no vault and no backend. Nothing is stored anywhere.
 - Nothing in this repository has been reviewed by an independent security auditor.
+- The planned cryptographic design is reviewed internally, with AI assistance, by ChatGPT and
+  Claude. That is not an independent review (see
+  [Cryptographic design review](#cryptographic-design-review)).
 
 Do not use Zavolt for real credentials. No claim that Zavolt is secure or production-ready should be
 made until the planned design in [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) has been built,
@@ -84,8 +87,9 @@ implemented.
    lives in memory only.
 5. **Never load code, fonts, styles or analytics from another origin at runtime.**
 6. **Never invent cryptography.** Use reviewed, standard constructions from vetted libraries, cover
-   them with published test vectors, and have a qualified reviewer look at any change that touches
-   them.
+   them with published test vectors, and put any change that touches them through the
+   cryptographic design review below. Never implement a construction without documented
+   justification.
 7. **Treat every dependency as code you are responsible for.** Add one only when the alternative is
    clearly worse, and keep to the seven-day waiting period for new releases.
 8. **Do not loosen a security control to make something pass.** If the Content-Security-Policy, a
@@ -96,3 +100,31 @@ implemented.
    "audited" or "certified" as a present-tense claim, no invented users, testimonials, prices,
    screenshots, downloads, certifications or legal text. Every feature on the homepage carries a
    status label for this reason.
+10. **Code reaches `main` only through a pull request.** Write code only on a dedicated feature
+    branch, start an implementation stage only with the owner's explicit approval, and merge only
+    with the owner's explicit approval. Only documentation-only changes, made at the owner's
+    request, are committed directly to `main`. Text shown on the website is code, not
+    documentation.
+
+## Cryptographic design review
+
+Zavolt has no cryptography specialist. On 17 November 2026 the owner replaced the earlier
+requirement, a cryptographer's review of the design before implementation, with this process
+(`docs/DECISIONS.md`):
+
+1. ChatGPT and Claude carry out a documented internal architecture and security review.
+2. Each review identifies its assumptions, unresolved questions, protocol risks, implementation
+   risks and the standards it relies on.
+3. Security-sensitive decisions are recorded in `docs/DECISIONS.md`. Only the owner decides.
+4. No cryptographic construction is invented, and none is implemented without documented
+   justification: the standard or published design it follows, and why it applies.
+5. Implementation proceeds through stages that the owner explicitly approves, one at a time. Code
+   is written on a dedicated feature branch and reaches `main` only through a pull request the
+   owner approves (rule 10).
+6. An independent external security audit takes place before any public release.
+
+**The internal review is not independent.** ChatGPT and Claude are AI assistants. They are not
+independent security auditors or qualified cryptography specialists, and their review is not an
+independent security review, an audit or a certification. Nothing written about Zavolt may describe
+it as one. Only the audit in point 6 is independent, and the internal review neither replaces it
+nor reduces what it must cover.
