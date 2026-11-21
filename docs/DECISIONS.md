@@ -52,6 +52,9 @@ one that says so.
 | 2026-11-17 | The internal review is AI-assisted. It is not an independent review, a specialist review or a certification.        | Owner         | ChatGPT and Claude are not independent security auditors or qualified cryptography specialists. Nothing may present their review as either.                                                            |
 | 2026-11-17 | Commitment kept: an independent external security audit takes place before any public release.                      | Owner         | The internal review does not replace or weaken it. Confirms the commitment of 2026-11-16.                                                                                                              |
 | 2026-11-17 | Security-sensitive decisions, including those from the internal review, are recorded here once the owner decides.   | Owner         | Provisional recommendations are not decisions and are not recorded as decided. They are listed in `ARCHITECTURE.md`, section 2.16.                                                                     |
+| 2026-11-21 | Production cryptographic code waits for an evidence gate: threat model, specification, test vectors and test plan.  | Owner         | All four exist in `docs/` and have been through the internal review before implementation begins. Production code only: documentation and non-cryptographic work are not blocked. See `SECURITY.md`.   |
+| 2026-11-21 | Gate approval order: internal review, findings recorded, owner approves the design, then authorises the stage.      | Owner         | Then implementation on a dedicated feature branch, and the required security tests and CI checks pass before merging. Approving the deliverables authorises no implementation by itself.               |
+| 2026-11-21 | The evidence gate does not replace the independent external security audit before any public release.               | Owner         | Passing the gate is not independent review: ChatGPT and Claude are not independent auditors or qualified cryptography specialists.                                                                     |
 
 ## Statements on the public homepage that the owner was asked to confirm
 
@@ -75,7 +78,8 @@ below). The other three statements stand.
 ## Open
 
 These are not decided. Do not build on any of them until the owner decides. The cryptographic ones
-go through the internal review in `SECURITY.md` (Cryptographic design review). The handoff
+go through the internal review in `SECURITY.md` (Cryptographic design review), and production
+cryptographic code also waits for its evidence gate. The handoff
 (`agent-handoff/NEXT_AGENT_PROMPT.md`, section 10) describes the options, and `ARCHITECTURE.md`
 section 2.16 lists the internal review's provisional recommendations, none of them approved.
 

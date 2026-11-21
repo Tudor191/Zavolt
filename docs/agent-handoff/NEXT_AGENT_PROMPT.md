@@ -24,8 +24,10 @@ These come from the project owner. They apply to every task, including small one
    work.** If you did not run a check, say "not run" and say why.
 3. **Never implement a custom cryptographic algorithm or protocol.** Do not write cryptographic code
    until the design has been through the internal review in `SECURITY.md` (Cryptographic design
-   review) and the owner has explicitly approved that implementation stage. Never invent a
-   construction, and never implement one without documented justification.
+   review) and the owner has explicitly approved that implementation stage. Production cryptographic
+   code also waits for the evidence gate in `SECURITY.md`: a reviewed threat model, protocol
+   specification, test-vector plan and security-test plan, and the owner's approval of the design.
+   Never invent a construction, and never implement one without documented justification.
 4. **Never weaken a security control to make a test, a build or a feature pass.** That includes the
    Content-Security-Policy, Trusted Types, lint rules, tests and CI jobs.
 5. **Never put secrets, keys or decrypted vault contents in browser storage.** That means
@@ -73,9 +75,9 @@ nobody can sign in. Never write, in code, documentation, a pull request or page 
 
 ## 2. State snapshot
 
-_Last refreshed: 17 November 2026, after the owner's decisions on how work is done were recorded
-directly on `main` (section 2.1). Whoever finishes a phase, or changes how work is done, must
-refresh this section._
+_Last refreshed: 21 November 2026, after the owner's evidence gate for cryptographic implementation
+was recorded and the branch table (section 2.2) was corrected, both directly on `main` (section
+2.1). Whoever finishes a phase, or changes how work is done, must refresh this section._
 
 Verify every line below yourself (section 11) before relying on it.
 
@@ -89,7 +91,7 @@ Verify every line below yourself (section 11) before relying on it.
 Pull request 2 is <https://github.com/Tudor191/Zavolt/pull/2>. The owner approved it, and it was
 squash-merged on 16 November 2026 from `feature/public-landing-page` at `e190de5`. The commit on
 `main`, `7ab28f3`, has exactly that commit's content. The branch's own commits are not part of
-`main`'s history.
+`main`'s history, and the branch is no longer listed on GitHub (section 2.2).
 
 Phase 2 is complete. No later phase has been started: the owner decides what comes next
 (section 18).
@@ -104,24 +106,43 @@ cryptographic design is reviewed internally by ChatGPT and Claude instead of by 
 specialist, while the independent audit before any public release stays mandatory. The
 documentation was updated in one commit directly on `main`. That was not the start of Phase 3.
 
+On 21 November 2026 the owner approved a mandatory evidence gate before any production
+cryptographic implementation (`SECURITY.md`, `docs/DECISIONS.md`), and the branch table in section
+2.2 was corrected to match GitHub. Both were documentation-only changes, committed directly on
+`main`. Neither started Phase 3 or any implementation.
+
 ### 2.2 Branches
 
-| Branch                                           | What it is                                                         | Rule                         |
-| ------------------------------------------------ | ------------------------------------------------------------------ | ---------------------------- |
-| `main`                                           | The integration branch. Every pull request targets it.             | Code only via pull requests. |
-| `conversie-html-to-typescript`                   | The original branch, holding the original static site (9 commits). | Never change or delete it.   |
-| `claude/zavolt-html-typescript-migration-w69ttq` | Phase 1, then pull request 3 (the Phase 2 handoff). Both merged.   | Leave it. Do not delete it.  |
-| `feature/public-landing-page`                    | The Phase 2 implementation branch (pull request 2, merged).        | Leave it. Do not delete it.  |
+When this was last refreshed, `main` was the only branch on GitHub, and **the repository's default
+branch was `main`**.
+
+| Branch | What it is                                             | Rule                         |
+| ------ | ------------------------------------------------------ | ---------------------------- |
+| `main` | The integration branch. Every pull request targets it. | Code only via pull requests. |
 
 Documentation-only changes that the owner asks for are committed directly to `main` (section 5.1).
 Code never is.
 
-When this was last refreshed, `main` was at `dbadf4e` and the documentation commit carrying this
-text was added directly on top of it. `conversie-html-to-typescript` was untouched at `cbc08b4`, and
-**the repository's default branch was `main`**. The owner switched it by hand after Phase 1: the
-agent session of that phase could not, because its GitHub tools had no repository-settings
-operation (section 5.3). Check the current default with `git ls-remote --symref origin HEAD` before
-you rely on it.
+**Former branches.** The three other branches this table used to list were removed from GitHub on
+17 November 2026, between 14:24 and 23:15 UTC. This file does not record who removed them. What
+remains of each:
+
+| Former branch                                    | What it was                                                                        | What remains                                                            |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `conversie-html-to-typescript`                   | The original branch, holding the original static site (9 commits).                 | Its last commit, `cbc08b4`, is in `main`'s history: `main` began there. |
+| `claude/zavolt-html-typescript-migration-w69ttq` | Phase 1 (pull request 1), then the handoff refresh after Phase 2 (pull request 3). | `refs/pull/1/head` at `8f039cd` and `refs/pull/3/head` at `dae7cf1`.    |
+| `feature/public-landing-page`                    | The Phase 2 implementation (pull request 2).                                       | `refs/pull/2/head` at `e190de5`.                                        |
+
+All three pull requests were squash-merged, so those branches' own commits are not in `main`'s
+history. GitHub keeps each pull request's last head commit as a read-only reference,
+`refs/pull/<number>/head`. These are pull request references, not branches. To inspect one, fetch
+it, for example `git fetch origin refs/pull/2/head`.
+
+When this was last refreshed, `main` was at `d2c0357` and the documentation commit carrying this
+text was added directly on top of it. The owner switched the default branch to `main` by hand after
+Phase 1: the agent session of that phase could not, because its GitHub tools had no
+repository-settings operation (section 5.3). Check the current branches and the default with
+`git ls-remote --heads origin` and `git ls-remote --symref origin HEAD` before you rely on them.
 
 `main` contains everything described below.
 
@@ -445,10 +466,11 @@ npm install --before="$(date -u -d '7 days ago' +%F)" <package>
 ## 7. Proposed zero-knowledge architecture
 
 > **This is a proposal. It is not approved, it is not final, and none of it is implemented.**
-> Do not implement any part of it. It must first be written out in full, go through the internal
-> review in `SECURITY.md`, and be approved by the owner, one implementation stage at a time. Until
-> then, treat every detail below as open to change. The internal review's own provisional
-> recommendations are in `docs/ARCHITECTURE.md`, section 2.16. They are not approved either.
+> Do not implement any part of it. It must first be written out in full as the deliverables of the
+> evidence gate in `SECURITY.md`, go through the internal review, and be approved by the owner, one
+> implementation stage at a time. Until then, treat every detail below as open to change. The
+> internal review's own provisional recommendations are in `docs/ARCHITECTURE.md`, section 2.16.
+> They are not approved either.
 
 The full text is in `docs/ARCHITECTURE.md`, Part 2. In brief:
 
@@ -554,8 +576,9 @@ instead of creating a second repository. Do not do this conversion until the own
 ## 10. Decisions that are still open
 
 **None of these is settled.** Do not pick one and build on it. If your task depends on one, stop and
-ask the owner. The cryptographic ones go through the internal review in `SECURITY.md`.
-`docs/ARCHITECTURE.md` section 2.16 has that review's provisional recommendations; none is approved.
+ask the owner. The cryptographic ones go through the internal review in `SECURITY.md`, and
+production cryptographic code also waits for its evidence gate. `docs/ARCHITECTURE.md` section 2.16
+has that review's provisional recommendations; none is approved.
 
 | Decision                                        | The options and what is known                                                                                                                                                                                                                                                                                                                           | What is needed to decide                                             |
 | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
@@ -833,7 +856,8 @@ not verify, what is still open, and what you recommend next. Say plainly when so
 - Never merge a pull request without the owner's explicit instruction for that pull request.
 - Never change repository settings that you were not asked to change.
 - Never implement cryptography before the internal review in `SECURITY.md` and the owner's explicit
-  approval of that implementation stage. Never invent an algorithm.
+  approval of that implementation stage, and never write production cryptographic code before the
+  evidence gate in `SECURITY.md` is met. Never invent an algorithm.
 - Never treat the owner's approval of documentation or a plan as approval to implement it.
 - Never describe the internal, AI-assisted review as independent, as an audit or as a specialist's
   review, and never treat it as a substitute for the independent external audit before any public
@@ -885,7 +909,7 @@ the owner asks for.
 | 1    | Foundation: typed application, tests, CI, documents (Phase 1)                               | Done. See section 2.                                               |
 | 2    | Public homepage and route separation (Phase 2)                                              | Done. See section 2.                                               |
 | 3    | Choose hosting; send the response headers in `SECURITY.md`                                  | Several protections cannot exist until something serves the files. |
-| 4    | Write the threat model and the full protocol; complete the internal review                  | Nothing cryptographic may be built before this.                    |
+| 4    | Write the evidence gate's four deliverables (`SECURITY.md`); complete the internal review   | Nothing cryptographic may be built before this.                    |
 | 5    | Build the client core as a package with no user interface, tested against published vectors | One audited implementation, shared by every client.                |
 | 6    | Build the backend: accounts, authentication, encrypted storage, rate limiting               | Needs the decisions in section 10.                                 |
 | 7    | Add registration, sign-in, unlocking and the vault to the web application                   | Needs steps 4 to 6.                                                |
@@ -896,9 +920,11 @@ the owner asks for.
 Step 10 is an owner commitment (`docs/DECISIONS.md`): an independent external security audit takes
 place before any public release. Step 4 was also a commitment, to a review by specialists; on
 17 November 2026 the owner replaced that with the internal review in `SECURITY.md`, which does not
-replace step 10. Step 4's documents are documentation-only work. Every step that changes code or
-configuration is an implementation stage: it starts only when the owner explicitly approves it, on
-a feature branch.
+replace step 10. Step 4 is the evidence gate in `SECURITY.md`, mandatory since 21 November 2026.
+Writing its four documents is documentation-only work. No production cryptographic code may be
+written until they have been through the internal review, and the owner has approved the design and
+authorised that implementation stage. Every step that changes code or configuration is an
+implementation stage: it starts only when the owner explicitly approves it, on a feature branch.
 
 Smaller things that are safe to do when asked, and need no open decision: accessibility
 improvements, testing in Firefox and Safari, pre-rendering the public pages, and content changes to

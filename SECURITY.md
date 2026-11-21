@@ -88,8 +88,8 @@ implemented.
 5. **Never load code, fonts, styles or analytics from another origin at runtime.**
 6. **Never invent cryptography.** Use reviewed, standard constructions from vetted libraries, cover
    them with published test vectors, and put any change that touches them through the
-   cryptographic design review below. Never implement a construction without documented
-   justification.
+   cryptographic design review below. Production cryptographic code must also pass the evidence
+   gate below first. Never implement a construction without documented justification.
 7. **Treat every dependency as code you are responsible for.** Add one only when the alternative is
    clearly worse, and keep to the seven-day waiting period for new releases.
 8. **Do not loosen a security control to make something pass.** If the Content-Security-Policy, a
@@ -118,9 +118,10 @@ requirement, a cryptographer's review of the design before implementation, with 
 3. Security-sensitive decisions are recorded in `docs/DECISIONS.md`. Only the owner decides.
 4. No cryptographic construction is invented, and none is implemented without documented
    justification: the standard or published design it follows, and why it applies.
-5. Implementation proceeds through stages that the owner explicitly approves, one at a time. Code
-   is written on a dedicated feature branch and reaches `main` only through a pull request the
-   owner approves (rule 10).
+5. Implementation proceeds through stages that the owner explicitly approves, one at a time.
+   Production cryptographic implementation must first pass the evidence gate below. Code is written
+   on a dedicated feature branch and reaches `main` only through a pull request the owner approves
+   (rule 10).
 6. An independent external security audit takes place before any public release.
 
 **The internal review is not independent.** ChatGPT and Claude are AI assistants. They are not
@@ -128,3 +129,89 @@ independent security auditors or qualified cryptography specialists, and their r
 independent security review, an audit or a certification. Nothing written about Zavolt may describe
 it as one. Only the audit in point 6 is independent, and the internal review neither replaces it
 nor reduces what it must cover.
+
+## Evidence gate for cryptographic implementation
+
+The owner made this gate mandatory on 21 November 2026 (`docs/DECISIONS.md`). It adds to the review
+process above and replaces none of it.
+
+**What it covers.** The gate applies to production cryptographic implementation: code meant to ship
+in a Zavolt client or service that derives, stores, wraps or uses keys, encrypts or decrypts,
+authenticates accounts or devices, or otherwise relies on cryptography for security. It does not
+block documentation work, including writing the deliverables below, or preparation that involves no
+cryptography. Any other cryptographic code still needs the owner's explicit approval first, under
+the rules above and in the handoff.
+
+**What must exist first.** Before any production cryptographic implementation begins, all four
+deliverables below exist in the repository under `docs/`, and each has been through the documented
+internal review.
+
+1. **Threat model.** It covers:
+   - assets and security objectives;
+   - trust boundaries;
+   - the relevant attackers and their capabilities;
+   - attack surfaces across the web application, the backend, the browser extension and the desktop
+     application;
+   - explicit assumptions;
+   - threats in scope and out of scope;
+   - residual risks.
+2. **Protocol specification.** It is versioned, and covers:
+   - authentication and key derivation;
+   - the key hierarchy and envelope encryption;
+   - encryption and authenticated data formats;
+   - nonce generation and key usage limits;
+   - vault synchronisation and integrity;
+   - recovery and device revocation;
+   - the session lifecycle and locking;
+   - rollback protection;
+   - error handling and security-sensitive state transitions.
+
+   Every cryptographic construction in it has a documented rationale and references to the relevant
+   standards. Writing a provisional recommendation into the specification does not approve it; only
+   the owner's approval of the design does (step 3 of the approval sequence).
+
+3. **Test-vector plan.** It names authoritative test vectors for every selected cryptographic
+   primitive and protocol component, from sources such as RFC test vectors, NIST test vectors,
+   Project Wycheproof, the Unicode normalisation test data and official protocol implementation
+   vectors. For each set it records:
+   - the source and its version;
+   - the inputs and expected outputs, exactly as the source publishes them;
+   - how the vectors are executed;
+   - which client runtimes must pass them.
+
+   Expected values come from the source. They are never invented, and never produced by the
+   implementation under test.
+
+4. **Reproducible security-test plan.** It covers:
+   - valid and invalid inputs;
+   - authentication failures;
+   - ciphertext tampering;
+   - wrong keys and incorrect context;
+   - nonce and key usage limits;
+   - serialisation and parser edge cases;
+   - compatibility across runtimes;
+   - recovery and revocation;
+   - malicious-server scenarios;
+   - rollback and synchronisation failures.
+
+   For every test it gives the command, the expected result, the test environment and the evidence
+   to keep. It separates the tests that can be prepared before implementation from those that need
+   a working implementation. A planned test is never reported as passed; only a test that has run
+   and passed is.
+
+**Approval sequence.** In this order:
+
+1. ChatGPT and Claude carry out the internal architecture and security review of the deliverables.
+2. Unresolved findings are recorded with the deliverables. Any that need the owner's decision are
+   added to the open table in `docs/DECISIONS.md`.
+3. The owner reviews the design and explicitly approves it.
+4. The owner explicitly authorises the relevant implementation stage.
+5. Implementation happens on a dedicated feature branch.
+6. The required security tests and continuous-integration checks pass before anything is merged.
+7. An independent external security audit takes place before any public release.
+
+**What the gate is not.** Passing it does not make the review independent: ChatGPT and Claude are
+not independent auditors or qualified cryptography specialists. The gate does not replace the
+independent external audit in step 7, or reduce what that audit covers. Approving the deliverables
+authorises no implementation by itself; each stage still needs the owner's explicit authorisation
+(step 4).

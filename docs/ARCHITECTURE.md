@@ -5,9 +5,9 @@ This document describes two different things and keeps them apart:
 - **Part 1** is what the repository contains today. It is implemented and tested.
 - **Part 2** is the intended design of the full product. **None of it is implemented.** It records
   direction and constraints so that later work starts from the same assumptions. Every section in
-  Part 2 is a plan. Its status section says what is approved and what is only proposed, and a plan
-  that touches cryptography goes through the internal review in [SECURITY.md](../SECURITY.md)
-  before any of it is built.
+  Part 2 is a plan. Its status section says what is approved and what is only proposed. A plan that
+  touches cryptography goes through the internal review in [SECURITY.md](../SECURITY.md), and none
+  of it is built as production code before that document's evidence gate is met.
 
 | Component                                    | Status                                          |
 | -------------------------------------------- | ----------------------------------------------- |
@@ -167,15 +167,15 @@ Everything from here on is planned. Nothing in this part has been built.
 ### Status of this part
 
 Part 2 mixes statements with different standing. Unless a statement is listed below as approved or
-as a requirement, it is a provisional recommendation.
+as a mandatory prerequisite, it is a provisional recommendation.
 
-| Standing                    | What it covers                                                                                                                                                                                                                                                                                                                                                           | Recorded in                          |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ |
-| Approved decisions          | Zero-knowledge encryption as the long-term architecture. The cryptographic direction (Argon2id, AES-256-GCM or XChaCha20-Poly1305, HKDF, envelope encryption, versioned keys), as a direction rather than a protocol. Recovery that never lets Zavolt decrypt. No advertising or tracking code. How design is reviewed, and the independent audit before public release. | [DECISIONS.md](./DECISIONS.md)       |
-| Implementation requirements | The principles in 2.2. The rules in [SECURITY.md](../SECURITY.md), including its cryptographic design review. The approval and branch rules in 2.15.                                                                                                                                                                                                                     | 2.2, 2.15, `SECURITY.md`             |
-| Provisional recommendations | Everything else here: components, threat model, key hierarchy, parameters, authentication, synchronisation, rotation, recovery, devices and clients (2.1, 2.3 to 2.12), and the internal review's recommendations (2.16). None of it is approved.                                                                                                                        | This part                            |
-| Unresolved questions        | The open decisions.                                                                                                                                                                                                                                                                                                                                                      | 2.13, [DECISIONS.md](./DECISIONS.md) |
-| Deferred work               | Work kept out of the first stages.                                                                                                                                                                                                                                                                                                                                       | 2.17                                 |
+| Standing                               | What it covers                                                                                                                                                                                                                                                                                                                                                                                                                   | Recorded in                          |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| Approved decisions                     | Zero-knowledge encryption as the long-term architecture. The cryptographic direction (Argon2id, AES-256-GCM or XChaCha20-Poly1305, HKDF, envelope encryption, versioned keys), as a direction rather than a protocol. Recovery that never lets Zavolt decrypt. No advertising or tracking code. How design is reviewed, the evidence gate before production cryptographic code, and the independent audit before public release. | [DECISIONS.md](./DECISIONS.md)       |
+| Mandatory implementation prerequisites | The principles in 2.2. The rules in [SECURITY.md](../SECURITY.md), including its cryptographic design review and, before any production cryptographic code, its evidence gate. The approval and branch rules in 2.15.                                                                                                                                                                                                            | 2.2, 2.15, `SECURITY.md`             |
+| Provisional recommendations            | Everything else here: components, threat model, key hierarchy, parameters, authentication, synchronisation, rotation, recovery, devices and clients (2.1, 2.3 to 2.12), and the internal review's recommendations (2.16). None of it is approved.                                                                                                                                                                                | This part                            |
+| Unresolved questions                   | The open decisions.                                                                                                                                                                                                                                                                                                                                                                                                              | 2.13, [DECISIONS.md](./DECISIONS.md) |
+| Deferred work                          | Work kept out of the first stages.                                                                                                                                                                                                                                                                                                                                                                                               | 2.17                                 |
 
 ### 2.1 Components
 
@@ -425,7 +425,8 @@ services/api      backend
 
 ### 2.14 Suggested order of work
 
-1. Write the threat model and the protocol in full, and complete the internal review (2.15).
+1. Write the evidence gate's four deliverables (2.15): the threat model, the protocol specification,
+   the test-vector plan and the security-test plan. Each goes through the internal review.
 2. Build the client core as a package with no user interface, tested against published vectors.
 3. Build the backend: accounts, authentication, encrypted storage, rate limiting.
 4. Add sign-up, sign-in, unlock and the vault to the web application.
@@ -435,7 +436,8 @@ services/api      backend
 
 Step 1 is documentation. Steps 2 to 6 are implementation stages: each starts only when the owner
 explicitly approves it, and is built on a feature branch that reaches `main` through a pull request
-the owner approves. The internal review does not replace step 7.
+the owner approves. Production cryptographic code, from step 2 on, also waits until the evidence
+gate is met. Neither the internal review nor the gate replaces step 7.
 
 ### 2.15 How this design is reviewed and approved
 
@@ -455,9 +457,19 @@ review by ChatGPT and Claude. The process is defined in
   approves. Approving this document, or any part of it, is not approval to implement it.
 - An independent external security audit takes place before any public release.
 
+**Evidence gate.** Since 21 November 2026, production cryptographic code also has a mandatory gate,
+defined in [SECURITY.md](../SECURITY.md#evidence-gate-for-cryptographic-implementation). Before any
+of it is written, four documents must exist under `docs/` and have been through the internal
+review: a threat model, a versioned protocol specification, a test-vector plan built on
+authoritative published vectors, and a reproducible security-test plan. After that, the owner
+approves the design and authorises the implementation stage; the work happens on a feature branch;
+and the required security tests and CI checks pass before anything is merged. The gate does not
+apply to documentation or to preparation that involves no cryptography. None of the four documents
+exists yet.
+
 **The internal review is AI-assisted and is not independent.** ChatGPT and Claude are not
 independent security auditors or qualified cryptography specialists. Their review is not an audit or
-a certification, and it does not replace the external audit.
+a certification. Neither it nor the evidence gate replaces the external audit.
 
 ### 2.16 Provisional recommendations from the internal review
 
@@ -485,8 +497,8 @@ from sections 2.1 to 2.12, both remain proposals until the owner decides.
 
 Three of these have no established standard behind them and need further analysis before any of
 them is relied on: the key commitment value, the manifest protocol, and the extension's sealed
-session storage. The review's detailed write-ups, a full threat model and a protocol specification,
-are not in the repository yet. Adding them is documentation work for the owner to request.
+session storage. These recommendations feed the evidence gate's deliverables (2.15) but do not
+replace them. Writing the deliverables is documentation work for the owner to request.
 
 ### 2.17 Deferred work
 
