@@ -100,6 +100,15 @@ section 2.16 lists the internal review's provisional recommendations, none of th
 | Licence                                                            | Owner                                                    |
 | Privacy policy and terms of service                                | Owner, with legal advice                                 |
 | Contact channel                                                    | Owner                                                    |
+| Who operates Zavolt: a person or a company; its name and address   | Owner; see `legal/LEGAL_OPEN_QUESTIONS.md`               |
+| Hosting, email and payment providers; retention periods            | Owner, with legal advice                                 |
+| Whether the Cyber Resilience Act and Digital Services Act apply    | Legal advice                                             |
+| Approval of the four evidence-gate drafts in `security/`           | Internal review, then the owner                          |
+| Risks proposed for acceptance in the threat model                  | Owner                                                    |
+
+The legal and licensing questions are detailed in `legal/LEGAL_OPEN_QUESTIONS.md`, with the drafts
+that depend on them. The protocol's unresolved questions are listed in `security/PROTOCOL.md`,
+section 22. None of these drafts records a decision.
 
 ## Closed
 

@@ -421,7 +421,7 @@ services/api      backend
 | Browser extension key storage under Manifest V3                            | Needs an exception to `SECURITY.md` rule 4. See 2.16.                      |
 | Supported browsers and platforms; sign-in time budget                      | Sets the Argon2id parameters. Needs benchmarks on real devices.            |
 | Sharing between users                                                      | Needs public keys. The hierarchy in 2.4 leaves room for it.                |
-| Licence                                                                    | None chosen.                                                               |
+| Licence                                                                    | None chosen. Options: `docs/legal/LICENSING_ASSESSMENT.md`.                |
 
 ### 2.14 Suggested order of work
 
@@ -464,8 +464,9 @@ review: a threat model, a versioned protocol specification, a test-vector plan b
 authoritative published vectors, and a reproducible security-test plan. After that, the owner
 approves the design and authorises the implementation stage; the work happens on a feature branch;
 and the required security tests and CI checks pass before anything is merged. The gate does not
-apply to documentation or to preparation that involves no cryptography. None of the four documents
-exists yet.
+apply to documentation or to preparation that involves no cryptography. First drafts of the four
+documents (version 0.1, 22 November 2026) are in [docs/security/](./security/README.md). None has
+been through the internal review or been approved, so the gate is not met.
 
 **The internal review is AI-assisted and is not independent.** ChatGPT and Claude are not
 independent security auditors or qualified cryptography specialists. Their review is not an audit or
@@ -498,7 +499,8 @@ from sections 2.1 to 2.12, both remain proposals until the owner decides.
 Three of these have no established standard behind them and need further analysis before any of
 them is relied on: the key commitment value, the manifest protocol, and the extension's sealed
 session storage. These recommendations feed the evidence gate's deliverables (2.15) but do not
-replace them. Writing the deliverables is documentation work for the owner to request.
+replace them. The owner asked for the deliverables on 21 November 2026; their first drafts carry
+these recommendations forward as provisional, unchanged in standing.
 
 ### 2.17 Deferred work
 

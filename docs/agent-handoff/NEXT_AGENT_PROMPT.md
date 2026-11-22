@@ -75,9 +75,9 @@ nobody can sign in. Never write, in code, documentation, a pull request or page 
 
 ## 2. State snapshot
 
-_Last refreshed: 21 November 2026, after the owner's evidence gate for cryptographic implementation
-was recorded and the branch table (section 2.2) was corrected, both directly on `main` (section
-2.1). Whoever finishes a phase, or changes how work is done, must refresh this section._
+_Last refreshed: 22 November 2026, after first drafts of the evidence-gate documents and of the
+legal and licensing documents were added directly on `main` (section 2.1). Whoever finishes a phase,
+or changes how work is done, must refresh this section._
 
 Verify every line below yourself (section 11) before relying on it.
 
@@ -111,14 +111,27 @@ cryptographic implementation (`SECURITY.md`, `docs/DECISIONS.md`), and the branc
 2.2 was corrected to match GitHub. Both were documentation-only changes, committed directly on
 `main`. Neither started Phase 3 or any implementation.
 
+On 21 and 22 November 2026, at the owner's request, first drafts were written of the evidence gate's
+four documents (`docs/security/`) and of the legal and licensing documents (`docs/legal/`), and
+committed directly on `main`. They are drafts: none has been through the internal review, been
+reviewed by a lawyer, or been approved, and none is published or in effect. **The evidence gate is
+not met.** No licence was chosen, and no legal text was put on the website. This was documentation
+work, not the start of Phase 3 or of any implementation.
+
 ### 2.2 Branches
 
-When this was last refreshed, `main` was the only branch on GitHub, and **the repository's default
-branch was `main`**.
+When this was last refreshed, the branches on GitHub were `main` and two branches that Dependabot
+opened for dependency updates, and **the repository's default branch was `main`**.
 
-| Branch | What it is                                             | Rule                         |
-| ------ | ------------------------------------------------------ | ---------------------------- |
-| `main` | The integration branch. Every pull request targets it. | Code only via pull requests. |
+| Branch                                                        | What it is                                                                                                         | Rule                                                      |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------- |
+| `main`                                                        | The integration branch. Every pull request targets it.                                                             | Code only via pull requests.                              |
+| `dependabot/npm_and_yarn/development-dependencies-742e64e2e4` | Pull request 4, "Bump the development-dependencies group with 8 updates", opened by Dependabot on 22 November 2026 | A dependency change: the owner reviews and decides on it. |
+| `dependabot/npm_and_yarn/types/node-26.6.6`                   | Pull request 5, "Bump @types/node from 24.19.2 to 26.6.6", opened by Dependabot on 22 November 2026                | As above.                                                 |
+
+Pull requests 4 (<https://github.com/Tudor191/Zavolt/pull/4>) and 5
+(<https://github.com/Tudor191/Zavolt/pull/5>) were open and unreviewed. Like every pull request,
+they are merged only with the owner's explicit approval (rule 8).
 
 Documentation-only changes that the owner asks for are committed directly to `main` (section 5.1).
 Code never is.
@@ -138,7 +151,7 @@ history. GitHub keeps each pull request's last head commit as a read-only refere
 `refs/pull/<number>/head`. These are pull request references, not branches. To inspect one, fetch
 it, for example `git fetch origin refs/pull/2/head`.
 
-When this was last refreshed, `main` was at `d2c0357` and the documentation commit carrying this
+When this was last refreshed, `main` was at `893cd42` and the documentation commit carrying this
 text was added directly on top of it. The owner switched the default branch to `main` by hand after
 Phase 1: the agent session of that phase could not, because its GitHub tools had no
 repository-settings operation (section 5.3). Check the current branches and the default with
@@ -164,7 +177,9 @@ repository-settings operation (section 5.3). Check the current branches and the 
 - Redirects from the original site's `.html` addresses.
 - Browser hardening that ships inside the page (section 6.2).
 - Type-checking, linting, unit tests, end-to-end tests and continuous integration.
-- Documentation of the current state, the decisions so far, and the planned design.
+- Documentation of the current state, the decisions so far, and the planned design, with first
+  drafts of the security design documents (`docs/security/`) and the legal documents
+  (`docs/legal/`).
 
 ### 2.4 What does not exist
 
@@ -177,9 +192,12 @@ None of the following has been started. Do not describe any of it as existing.
 - Account recovery and device management.
 - The desktop application and the browser extension.
 - Hosting, and therefore the security response headers a host must send (`SECURITY.md`).
-- Privacy policy and terms of service. No legal text has been written.
+- A published privacy policy or terms of service. Drafts exist in `docs/legal/`; none has been
+  reviewed by a lawyer, approved or published, and the website's pages still say none exists.
 - A contact channel.
-- A licence. None has been chosen.
+- A licence. None has been chosen; the options and a recommendation awaiting the owner's decision
+  are in `docs/legal/LICENSING_ASSESSMENT.md`. Do not add a `LICENSE` file without the owner's
+  decision.
 
 ### 2.5 Known limitations
 
@@ -470,7 +488,8 @@ npm install --before="$(date -u -d '7 days ago' +%F)" <package>
 > evidence gate in `SECURITY.md`, go through the internal review, and be approved by the owner, one
 > implementation stage at a time. Until then, treat every detail below as open to change. The
 > internal review's own provisional recommendations are in `docs/ARCHITECTURE.md`, section 2.16.
-> They are not approved either.
+> They are not approved either. First drafts of the evidence-gate deliverables are in
+> `docs/security/`; they have not been reviewed or approved, and they change none of this.
 
 The full text is in `docs/ARCHITECTURE.md`, Part 2. In brief:
 
@@ -594,7 +613,9 @@ Other open decisions: one shared client core in a compiled language or separate 
 platform; sharing between users; the licence; the privacy policy and terms; a contact channel. The
 internal review added more: online-only or offline unlocking, the browser extension's key storage,
 the supported browsers and platforms, and how many old versions of an item are kept
-(`docs/DECISIONS.md`).
+(`docs/DECISIONS.md`). The legal questions the owner must answer, such as who operates Zavolt, which
+providers it uses and how long it keeps data, are in `docs/legal/LEGAL_OPEN_QUESTIONS.md`. The
+protocol's unresolved design questions are in `docs/security/PROTOCOL.md`, section 22.
 
 Decided on 16 November 2026, and no longer open: `/cart` and `/shop` stay, and the loader is a
 padlock and key (`docs/DECISIONS.md`).
@@ -625,7 +646,9 @@ branch. Compare what you see with section 2.
    open, unless the owner told you to.
 
 3. Read, in this order: `README.md`, `SECURITY.md`, `docs/ARCHITECTURE.md`, `docs/AUDIT.md`,
-   `docs/DECISIONS.md`, and this file.
+   `docs/DECISIONS.md`, and this file. For security or cryptography work, also read
+   `docs/security/README.md` and the four drafts it lists. For anything touching privacy, terms,
+   cookies, licensing or what the website says, also read `docs/legal/README.md`.
 
 4. Check your Node.js version. It must be 24.15 or later, or 22.22.2 or later in the 22 line:
 
@@ -923,8 +946,10 @@ place before any public release. Step 4 was also a commitment, to a review by sp
 replace step 10. Step 4 is the evidence gate in `SECURITY.md`, mandatory since 21 November 2026.
 Writing its four documents is documentation-only work. No production cryptographic code may be
 written until they have been through the internal review, and the owner has approved the design and
-authorised that implementation stage. Every step that changes code or configuration is an
-implementation stage: it starts only when the owner explicitly approves it, on a feature branch.
+authorised that implementation stage. First drafts of the four documents were written on 22 November
+2026 (`docs/security/`); their internal review has not started. Every step that changes code or
+configuration is an implementation stage: it starts only when the owner explicitly approves it, on a
+feature branch.
 
 Smaller things that are safe to do when asked, and need no open decision: accessibility
 improvements, testing in Firefox and Safari, pre-rendering the public pages, and content changes to

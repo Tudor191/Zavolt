@@ -100,6 +100,8 @@ src/
   test/                 Test setup
 e2e/                    End-to-end tests (Playwright)
 docs/                   Architecture, decisions, the audit of the original site, agent handoff
+  security/             Drafts of the evidence-gate documents: threat model, protocol, test plans
+  legal/                Drafts of the legal and licensing documents (none is in effect)
 .github/                CI workflow and Dependabot configuration
 ```
 
@@ -158,11 +160,19 @@ and the rules that code in this repository must follow.
   still open.
 - [docs/AUDIT.md](./docs/AUDIT.md): the audit of the original static site and what was done about
   each finding.
+- [docs/security/](./docs/security/README.md): first drafts of the threat model, protocol
+  specification, test-vector plan and security-test plan that must be reviewed and approved before
+  any production cryptographic code is written. None is approved.
+- [docs/legal/](./docs/legal/README.md): first drafts of the privacy policy, terms of service and
+  licensing documents, and the questions the owner must answer first. None is in effect.
 - [docs/agent-handoff/NEXT_AGENT_PROMPT.md](./docs/agent-handoff/NEXT_AGENT_PROMPT.md): a complete
   brief for the next coding agent working on this repository.
 
 ## Licence
 
-No licence has been chosen for this project, so all rights are reserved by its owner. Licences of
-bundled third-party code are listed in `public/THIRD-PARTY-NOTICES.txt` and in
-`THIRD-PARTY-LICENSES.md`, which the build writes into `dist/`.
+No licence has been chosen for this project, so all rights are reserved by its owner. Because the
+repository is public, GitHub's Terms of Service let other GitHub users view and fork it on GitHub.
+The options, and a recommendation awaiting the owner's decision, are in
+[docs/legal/LICENSING_ASSESSMENT.md](./docs/legal/LICENSING_ASSESSMENT.md). Licences of bundled
+third-party code are listed in `public/THIRD-PARTY-NOTICES.txt` and in `THIRD-PARTY-LICENSES.md`,
+which the build writes into `dist/`.

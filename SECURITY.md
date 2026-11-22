@@ -146,6 +146,10 @@ the rules above and in the handoff.
 deliverables below exist in the repository under `docs/`, and each has been through the documented
 internal review.
 
+**Where things stand.** First drafts of all four (version 0.1, 22 November 2026) are in
+[docs/security/](./docs/security/README.md). None has been through the internal review or been
+approved, so **the gate is not met**.
+
 1. **Threat model.** It covers:
    - assets and security objectives;
    - trust boundaries;
